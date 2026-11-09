@@ -113,7 +113,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   /** Init auth route */
   async function initAuthRoute() {
     // check if user info is initialized
-    if (!authStore.userInfo.user.userId) {
+    if (!authStore.userInfo.user?.userId) {
       await authStore.initUserInfo();
     }
 

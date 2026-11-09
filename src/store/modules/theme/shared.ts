@@ -257,6 +257,9 @@ export function getNaiveTheme(
     },
     Tag: {
       borderRadius: `${settings.themeRadius}px`
+    },
+    Button: {
+      textColorPrimary: '#ffffff'
     }
   };
 

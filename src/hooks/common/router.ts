@@ -107,6 +107,7 @@ export function useRouterPush(inSetup = true) {
     routerBack,
     routerPushByKey,
     routerPushByKeyWithMetaQuery,
+    toHome,
     toLogin,
     toggleLoginModule,
     redirectFromLogin

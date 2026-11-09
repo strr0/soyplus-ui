@@ -12,6 +12,20 @@ const local: App.I18n.Schema = {
     addSuccess: 'Add Success',
     backToHome: 'Back to home',
     batchDelete: 'Batch Delete',
+    import: 'Import',
+    export: 'Export',
+    importSuccess: 'Import Success',
+    importFail: 'Import Fail',
+    importTemplate: 'Import Template',
+    importResult: 'Import Result',
+    downloadTemplate: 'Download Template',
+    importEnd: '',
+    importFormat: 'and the format is',
+    importTip: 'Please upload a file no larger than',
+    importSize: 'Please upload a file no larger than',
+    exportSuccess: 'Export Success',
+    exportFail: 'Export Fail',
+    updateExisting: 'Whether to update the existing user data',
     cancel: 'Cancel',
     close: 'Close',
     check: 'Check',
@@ -19,11 +33,14 @@ const local: App.I18n.Schema = {
     expandColumn: 'Expand Column',
     columnSetting: 'Column Setting',
     config: 'Config',
+    login: 'Login',
     confirm: 'Confirm',
+    save: 'Save',
     delete: 'Delete',
     deleteSuccess: 'Delete Success',
     confirmDelete: 'Are you sure you want to delete?',
     edit: 'Edit',
+    download: 'Download',
     warning: 'Warning',
     error: 'Error',
     index: 'Index',
@@ -43,11 +60,31 @@ const local: App.I18n.Schema = {
     tip: 'Tip',
     trigger: 'Trigger',
     update: 'Update',
+    saveSuccess: 'Save Success',
     updateSuccess: 'Update Success',
+    noChange: 'No actions were taken',
     userCenter: 'User Center',
     yesOrNo: {
       yes: 'Yes',
       no: 'No'
+    },
+    second: 'Second',
+    selected: 'selected',
+    anyRecords: 'records',
+    clear: 'Clear',
+    noSelectRecord: 'No Records Selected',
+    systemTip: 'Notice',
+    message: 'Message',
+    downloading: 'Downloading data, please wait...',
+    downloadSuccess: 'Download Complete',
+    copySuccess: 'Copied Successfully',
+    copyUnsupported: 'Your browser does not support the Clipboard API',
+    switchConfirm: 'Are you sure you want to {status} {name}?',
+    errorCode: {
+      unauthorized: 'Authentication failed, unable to access system resources',
+      forbidden: 'No permission for this operation',
+      notFound: 'The resource you are accessing does not exist',
+      unknown: 'Unknown system error, please report it to the administrator'
     }
   },
   request: {
@@ -56,7 +93,10 @@ const local: App.I18n.Schema = {
     logoutWithModal: 'Pop up modal after request failed and then log out user',
     logoutWithModalMsg: 'User status is invalid, please log in again',
     refreshToken: 'The requested token has expired, refresh the token',
-    tokenExpired: 'The requested token has expired'
+    tokenExpired: 'The requested token has expired',
+    sessionExpired: 'Your login has expired, please log in again',
+    relogin: 'Log in again',
+    repeatSubmit: 'The data is being processed, please do not submit it repeatedly'
   },
   theme: {
     themeDrawerTitle: 'Theme Configuration',
@@ -96,6 +136,10 @@ const local: App.I18n.Schema = {
         default: {
           name: 'Default Preset',
           desc: 'Default theme preset with balanced settings'
+        },
+        soybean: {
+          name: 'Soybean',
+          desc: 'Default theme preset of SoybeanAdmin'
         },
         dark: {
           name: 'Dark Preset',
@@ -223,18 +267,96 @@ const local: App.I18n.Schema = {
       resetSuccessMsg: 'Reset Success'
     }
   },
-  route: {
-    login: 'Login',
-    403: 'No Permission',
-    404: 'Page Not Found',
-    500: 'Server Error',
-    'iframe-page': 'Iframe',
-    home: 'Home'
+  dict: {
+    sys_user_gender: {
+      male: 'Male',
+      female: 'Female',
+      unknown: 'Unknown'
+    },
+    sys_show_hide: {
+      show: 'Show',
+      hide: 'Hide'
+    },
+    sys_normal_disable: {
+      normal: 'Normal',
+      disable: 'Disable'
+    },
+    sys_yes_no: {
+      yes: 'Yes',
+      no: 'No'
+    },
+    sys_notice_type: {
+      notice: 'Notice',
+      announcement: 'Announcement'
+    },
+    sys_notice_status: {
+      normal: 'Normal',
+      close: 'Close'
+    },
+    sys_oper_type: {
+      insert: 'Insert',
+      update: 'Update',
+      delete: 'Delete',
+      grant: 'Grant',
+      export: 'Export',
+      import: 'Import',
+      force: 'Force',
+      gencode: 'Generate Code',
+      clean: 'Clean Data',
+      other: 'Other'
+    },
+    sys_common_status: {
+      success: 'Success',
+      fail: 'Fail'
+    },
+    sys_grant_type: {
+      password: 'Password Auth',
+      sms: 'SMS Auth',
+      email: 'Email Auth',
+      miniapp: 'Mini App Auth',
+      social: 'Social Auth'
+    },
+    sys_device_type: {
+      pc: 'PC',
+      android: 'Android',
+      ios: 'iOS',
+      miniapp: 'Mini App'
+    },
+    wf_business_status: {
+      revoked: 'Revoked',
+      draft: 'Draft',
+      pending: 'Pending',
+      completed: 'Completed',
+      cancelled: 'Cancelled',
+      returned: 'Returned',
+      terminated: 'Terminated'
+    },
+    wf_form_type: {
+      custom_form: 'Custom Form',
+      dynamic_form: 'Dynamic Form'
+    },
+    wf_task_status: {
+      revoke: 'Revoke',
+      pass: 'Pass',
+      pending_review: 'Pending Review',
+      cancel: 'Cancel',
+      return: 'Return',
+      terminate: 'Terminate',
+      transfer: 'Transfer',
+      delegate: 'Delegate',
+      copy: 'Copy',
+      add_sign: 'Add Sign',
+      minus_sign: 'Minus Sign',
+      timeout: 'Timeout'
+    }
   },
   page: {
     login: {
       common: {
+        title: 'Modern enterprise-level multi-tenant management system',
+        subTitle: 'Provides developers with a complete enterprise management solution',
         loginOrRegister: 'Login / Register',
+        register: 'Register',
         userNamePlaceholder: 'Please enter user name',
         phonePlaceholder: 'Please enter phone number',
         codePlaceholder: 'Please enter verification code',
@@ -245,11 +367,16 @@ const local: App.I18n.Schema = {
         back: 'Back',
         validateSuccess: 'Verification passed',
         loginSuccess: 'Login successfully',
-        welcomeBack: 'Welcome back, {userName} !'
+        welcomeBack: 'Welcome back, {userName} !',
+        phoneDesc: 'Enter your phone number and we will send a verification code to your phone',
+        noCaptcha: 'No verification code'
       },
       pwdLogin: {
         title: 'Password Login',
-        rememberMe: 'Remember me',
+        heading: 'Sign in to your account',
+        desc: 'Welcome back! Please enter your account information',
+        noAccount: "Don't have an account?",
+        rememberMe: 'Remember password',
         forgetPassword: 'Forget password?',
         register: 'Register',
         otherAccountLogin: 'Other Account Login',
@@ -267,6 +394,10 @@ const local: App.I18n.Schema = {
       },
       register: {
         title: 'Register',
+        heading: 'Create a new account',
+        desc: 'Welcome! Please enter your account information',
+        hasAccount: 'Already have an account?',
+        registerSuccess: 'Register Successfully',
         agreement: 'I have read and agree to',
         protocol: '《User Agreement》',
         policy: '《Privacy Policy》'
@@ -306,6 +437,754 @@ const local: App.I18n.Schema = {
         desc5: 'Soybean just wrote some of the workbench pages casually, and it was enough to see!'
       },
       creativity: 'Creativity'
+    },
+    common: {
+      id: 'ID',
+      createBy: 'Creator',
+      createTime: 'Create Time',
+      updateBy: 'Updater',
+      updateTime: 'Update Time',
+      remark: 'Remark',
+      form: {
+        remark: {
+          required: 'Please enter remark',
+          invalid: 'Remark cannot be empty'
+        }
+      }
+    },
+    system: {
+      client: {
+        title: 'Client List',
+        clientId: 'Client ID',
+        clientKey: 'Client Key',
+        clientSecret: 'Client Secret',
+        grantTypeList: 'Grant Type',
+        deviceType: 'Device Type',
+        activeTimeout: 'Token Active Timeout',
+        timeout: 'Token Timeout',
+        status: 'Status',
+        form: {
+          clientId: {
+            required: 'Please enter Client ID',
+            invalid: 'Client ID cannot be empty'
+          },
+          clientKey: {
+            required: 'Please enter Client Key',
+            invalid: 'Client Key cannot be empty'
+          },
+          clientSecret: {
+            required: 'Please enter Client Secret',
+            invalid: 'Client Secret cannot be empty'
+          },
+          grantTypeList: {
+            required: 'Please select Grant Type',
+            invalid: 'Grant Type cannot be empty'
+          },
+          deviceType: {
+            required: 'Please select Device Type',
+            invalid: 'Device Type cannot be empty'
+          },
+          activeTimeout: {
+            required: 'Please enter Active Timeout',
+            invalid: 'Active Timeout cannot be empty',
+            tooltip: 'Specify time without operation will expire (unit: second), default 30 minutes (1800 seconds)'
+          },
+          timeout: {
+            required: 'Please enter Timeout',
+            invalid: 'Timeout cannot be empty',
+            tooltip: 'Specify time will expire (unit: second), default 7 days (604800 seconds)'
+          },
+          status: {
+            required: 'Please select Status',
+            invalid: 'Status cannot be empty'
+          }
+        },
+        addClient: 'Add Client',
+        editClient: 'Edit Client'
+      },
+      config: {
+        title: 'Config List',
+        configName: 'Config Name',
+        configKey: 'Config Key',
+        configValue: 'Config Value',
+        configType: 'Built-in',
+        remark: 'Remark',
+        createTime: 'Create Time',
+        refreshCache: 'Refresh Cache',
+        refreshCacheSuccess: 'Refresh cache successfully',
+        form: {
+          configId: {
+            required: 'Please enter Config ID',
+            invalid: 'Config ID cannot be empty'
+          },
+          configName: {
+            required: 'Please enter Config Name',
+            invalid: 'Config Name cannot be empty'
+          },
+          configKey: {
+            required: 'Please enter Config Key',
+            invalid: 'Config Key cannot be empty'
+          },
+          configValue: {
+            required: 'Please enter Config Value',
+            invalid: 'Config Value cannot be empty'
+          },
+          configType: {
+            required: 'Please select Built-in status',
+            invalid: 'Built-in status cannot be empty'
+          },
+          remark: {
+            required: 'Please enter Remark',
+            invalid: 'Remark cannot be empty'
+          }
+        },
+        addConfig: 'Add Config',
+        editConfig: 'Edit Config'
+      },
+      dept: {
+        empty: 'No department information',
+        title: 'Department List',
+        parentId: 'Parent Department',
+        deptName: 'Department Name',
+        orderNum: 'Order Num',
+        deptCategory: 'Department Category',
+        leader: 'Leader',
+        phone: 'Phone',
+        email: 'Email',
+        status: 'Status',
+        sort: 'Sort',
+        createTime: 'Create Time',
+        expandAll: 'Expand All',
+        collapseAll: 'Collapse All',
+        form: {
+          parentId: {
+            required: 'Please select Parent Department',
+            invalid: 'Parent Department cannot be empty'
+          },
+          deptName: {
+            required: 'Please enter Department Name',
+            invalid: 'Department Name cannot be empty'
+          },
+          orderNum: {
+            required: 'Please enter Order Num',
+            invalid: 'Order num cannot be empty'
+          },
+          deptCategory: {
+            required: 'Please enter Department Category',
+            invalid: 'Department category cannot be empty'
+          },
+          leader: {
+            required: 'Please enter Leader',
+            invalid: 'Leader cannot be empty'
+          },
+          phone: {
+            required: 'Please enter Phone',
+            invalid: 'Phone cannot be empty'
+          },
+          email: {
+            required: 'Please enter Email',
+            invalid: 'Email cannot be empty'
+          },
+          status: {
+            required: 'Please select Status',
+            invalid: 'Status cannot be empty'
+          },
+          sort: {
+            required: 'Please enter Sort',
+            invalid: 'Sort cannot be empty'
+          },
+          deptId: {
+            required: 'Please enter deptId',
+            invalid: 'Dept Id cannot be empty'
+          }
+        },
+        error: {
+          getDeptDataFail: 'Get dept data fail',
+          getDeptUserDataFail: 'Get dept user data fail'
+        },
+        placeholder: {
+          defaultLeaderPlaceHolder: 'Please select leader',
+          addDataLeaderPlaceHolder: 'Department leader can be selected only when updating',
+          deptUserIsEmptyLeaderPlaceHolder: 'Current dept has no leader'
+        },
+        addDept: 'Add Department',
+        editDept: 'Edit Department'
+      },
+      dict: {
+        title: 'Dictionary List',
+        dictTypeTitle: 'Dictionary Type List',
+        dictName: 'Dictionary Name',
+        dictType: 'Dictionary Type',
+        status: 'Status',
+        remark: 'Remark',
+        createTime: 'Create Time',
+        refreshCacheSuccess: 'Refresh cache successfully',
+        refreshCache: 'Refresh Cache',
+        confirmDeleteDictType: 'Are you sure you want to delete dic type',
+        data: {
+          title: 'Dictionary Data List',
+          label: 'Dictionary Label',
+          value: 'Dictionary Value',
+          dictSort: 'Sort',
+          isDefault: 'Default',
+          listClass: 'Display Style',
+          cssClass: 'CSS Class',
+          status: 'Status',
+          remark: 'Remark',
+          createTime: 'Create Time'
+        },
+        form: {
+          dictId: {
+            required: 'Please enter Dictionary Id',
+            invalid: 'Dictionary Id cannot be empty'
+          },
+          dictCode: {
+            required: 'Please enter Dictionary Code',
+            invalid: 'Dictionary Code cannot be empty'
+          },
+          dictName: {
+            required: 'Please enter Dictionary Name',
+            invalid: 'Dictionary Name cannot be empty'
+          },
+          dictType: {
+            required: 'Please enter Dictionary Type',
+            invalid: 'Dictionary Type cannot be empty'
+          },
+          status: {
+            required: 'Please select Status',
+            invalid: 'Status cannot be empty'
+          },
+          remark: {
+            required: 'Please enter Remark',
+            invalid: 'Remark cannot be empty'
+          },
+          dictLabel: {
+            required: 'Please enter Dictionary Label',
+            invalid: 'Dictionary Label cannot be empty'
+          },
+          dictValue: {
+            required: 'Please enter Dictionary Value',
+            invalid: 'Dictionary Value cannot be empty'
+          },
+          dictSort: {
+            required: 'Please enter Sort',
+            invalid: 'Sort cannot be empty'
+          },
+          isDefault: {
+            required: 'Please select Default',
+            invalid: 'Default cannot be empty'
+          },
+          listClass: {
+            required: 'Please select Display Style',
+            invalid: 'Display Style cannot be empty'
+          },
+          cssClass: {
+            required: 'Please enter CSS Class',
+            invalid: 'CSS Class cannot be empty'
+          }
+        },
+        addDict: 'Add Dictionary',
+        editDict: 'Edit Dictionary',
+        addDictData: 'Add Dictionary Data',
+        editDictData: 'Edit Dictionary Data',
+        addDictType: 'Add Dictionary Type',
+        editDictType: 'Edit Dictionary Type',
+        exportDictType: 'Export Dictionary Type',
+        refreshDictType: 'Refresh Dictionary Type',
+        dictTypeIsEmpty: 'Dictionary type is empty'
+      },
+      menu: {
+        title: 'Menu List',
+        parentId: 'Parent Menu',
+        iconType: 'Icon Type',
+        menuName: 'Menu Name',
+        icon: 'Menu Icon',
+        orderNum: 'Sort',
+        perms: 'Permission Code',
+        component: 'Component Path',
+        path: 'Route Path',
+        externalPath: 'External Path',
+        query: 'Route Parameters',
+        iframeQuery: 'Iframe Address',
+        isFrame: 'External Link',
+        isCache: 'Cache',
+        menuType: 'Menu Type',
+        visible: 'Visible',
+        status: 'Status',
+        createTime: 'Create Time',
+        cache: 'cache',
+        noCache: 'No Cache',
+        rootName: 'Root',
+        buttonPermissionList: 'Button Permission List',
+        emptyMenu: 'Empty Menu',
+        menuDetail: 'Menu Detail',
+        cascadeDeleteContent: 'Cascade delete menu will delete the selected menu and all its sub-menus, are you sure?',
+        iconifyTip: 'iconify address：`https://icones.js.org`',
+        isFrameTip: 'If you choose External Link, the routing address needs to start with `http(s)://`',
+        isCacheTip:
+          'If you select yes, it will be cached by `keep-alive`, and the `name` and address of the matching component must be consistent',
+        visibleTip: 'If you choose Hide, the route will not appear in the sidebar, but it can still be accessed.',
+        statusTip: 'If you choose to disable, the route will not appear in the sidebar and cannot be accessed.',
+        permsTip: "Permission string defined in the controller, such as: {'@'}SaCheckPermission('system:user:list')",
+        componentTip:
+          'The component path to access, such as: `system/user/index`, which is in the `views` directory by default',
+        pathTip:
+          'Router path，Example：`user`，If the external network address needs to be accessed in the internal link,then  `http(s)://` beginning',
+        form: {
+          parentId: {
+            required: 'Please select Parent Menu',
+            invalid: 'Parent Menu cannot be empty'
+          },
+          menuType: {
+            required: 'Please select Menu Type',
+            invalid: 'Menu Type cannot be empty'
+          },
+          icon: {
+            required: 'Please select Menu Icon',
+            invalid: 'Menu Icon cannot be empty'
+          },
+          menuIds: {
+            required: 'Please select Menu',
+            invalid: 'Menu cannot be empty'
+          },
+          menuName: {
+            required: 'Please enter Menu Name',
+            invalid: 'Menu Name cannot be empty'
+          },
+          perms: {
+            required: 'Please enter permission code',
+            invalid: 'Permission code cannot be empty'
+          },
+          orderNum: {
+            required: 'Please enter order num',
+            invalid: 'Order num cannot be empty'
+          },
+          isFrame: {
+            required: 'Please select External Link',
+            invalid: 'External Link cannot be empty'
+          },
+          path: {
+            required: 'Please enter Route Path',
+            invalid: 'Route Path cannot be empty'
+          },
+          component: {
+            required: 'Please enter Component Path',
+            invalid: 'Component Path cannot be empty'
+          },
+          query: {
+            required: 'Please enter Route Parameters',
+            invalid: 'Route Parameters cannot be empty'
+          },
+          isCache: {
+            required: 'Please select Cache',
+            invalid: 'Cache cannot be empty'
+          },
+          visible: {
+            required: 'Please select Visible',
+            invalid: 'Visible cannot be empty'
+          },
+          status: {
+            required: 'Please select Status',
+            invalid: 'Status cannot be empty'
+          },
+          permission: {
+            required: 'Please enter Permission',
+            invalid: 'Permission cannot be empty'
+          }
+        },
+        placeholder: {
+          iconifyIconPlaceholder: 'Please enter an icon',
+          localIconPlaceholder: 'Please select the local icon',
+          queryKey: 'Please enter a key',
+          queryValue: 'Please enter a value',
+          queryIframe: 'Please enter a iframe address'
+        },
+        directory: 'Directory',
+        menu: 'Menu',
+        button: 'Button',
+        addMenu: 'Add Menu',
+        addChildMenu: 'Add Child Menu',
+        editMenu: 'Edit Menu',
+        cascadeDelete: 'Cascade Delete Menu'
+      },
+      notice: {
+        title: 'Notice List',
+        noticeTitle: 'Notice Title',
+        noticeType: 'Notice Type',
+        noticeContent: 'Notice Content',
+        status: 'Status',
+        createTime: 'Create Time',
+        form: {
+          noticeTitle: {
+            required: 'Please enter Notice Title',
+            invalid: 'Notice Title cannot be empty'
+          },
+          noticeType: {
+            required: 'Please select Notice Type',
+            invalid: 'Notice Type cannot be empty'
+          },
+          noticeContent: {
+            required: 'Please enter Notice Content',
+            invalid: 'Notice Content cannot be empty'
+          },
+          status: {
+            required: 'Please select Status',
+            invalid: 'Status cannot be empty'
+          }
+        },
+        addNotice: 'Add Notice',
+        editNotice: 'Edit Notice'
+      },
+      oss: {
+        title: 'File List',
+        fileName: 'File Name',
+        originalName: 'Original Name',
+        fileSuffix: 'File Extension',
+        url: 'File URL',
+        createTime: 'Create Time',
+        service: 'Service Provider',
+        form: {
+          file: {
+            required: 'Please select a file',
+            invalid: 'File cannot be empty'
+          }
+        },
+        upload: 'Upload File',
+        preview: 'Preview',
+        download: 'Download',
+        copy: 'Copy Link',
+        copySuccess: 'Copy Success'
+      },
+      ossConfig: {
+        title: 'OSS Config List',
+        configKey: 'Config Key',
+        accessKey: 'Access Key',
+        secretKey: 'Secret Key',
+        bucketName: 'Bucket Name',
+        prefix: 'Prefix',
+        endpoint: 'Endpoint',
+        domain: 'Custom Domain',
+        isHttps: 'HTTPS',
+        region: 'Region',
+        status: 'Status',
+        remark: 'Remark',
+        createTime: 'Create Time',
+        form: {
+          configKey: {
+            required: 'Please enter Config Key',
+            invalid: 'Config Key cannot be empty'
+          },
+          accessKey: {
+            required: 'Please enter Access Key',
+            invalid: 'Access Key cannot be empty'
+          },
+          secretKey: {
+            required: 'Please enter Secret Key',
+            invalid: 'Secret Key cannot be empty'
+          },
+          bucketName: {
+            required: 'Please enter Bucket Name',
+            invalid: 'Bucket Name cannot be empty'
+          },
+          prefix: {
+            required: 'Please enter Prefix',
+            invalid: 'Prefix cannot be empty'
+          },
+          endpoint: {
+            required: 'Please enter Endpoint',
+            invalid: 'Endpoint cannot be empty'
+          },
+          domain: {
+            required: 'Please enter Custom Domain',
+            invalid: 'Custom Domain cannot be empty'
+          },
+          isHttps: {
+            required: 'Please select HTTPS',
+            invalid: 'HTTPS cannot be empty'
+          },
+          region: {
+            required: 'Please enter Region',
+            invalid: 'Region cannot be empty'
+          },
+          status: {
+            required: 'Please select Status',
+            invalid: 'Status cannot be empty'
+          },
+          remark: {
+            required: 'Please enter Remark',
+            invalid: 'Remark cannot be empty'
+          }
+        },
+        addOssConfig: 'Add OSS Config',
+        editOssConfig: 'Edit OSS Config'
+      },
+      post: {
+        title: 'Post List',
+        postCode: 'Post Code',
+        postName: 'Post Name',
+        postSort: 'Post Sort',
+        status: 'Status',
+        remark: 'Remark',
+        createTime: 'Create Time',
+        form: {
+          postCode: {
+            required: 'Please enter Post Code',
+            invalid: 'Post Code cannot be empty'
+          },
+          postName: {
+            required: 'Please enter Post Name',
+            invalid: 'Post Name cannot be empty'
+          },
+          postSort: {
+            required: 'Please enter Post Sort',
+            invalid: 'Post Sort cannot be empty'
+          },
+          status: {
+            required: 'Please select Status',
+            invalid: 'Status cannot be empty'
+          },
+          remark: {
+            required: 'Please enter Remark',
+            invalid: 'Remark cannot be empty'
+          }
+        },
+        addPost: 'Add Post',
+        editPost: 'Edit Post'
+      },
+      role: {
+        title: 'Role List',
+        roleName: 'Role Name',
+        roleKey: 'Role Key',
+        roleSort: 'Role Sort',
+        status: 'Status',
+        remark: 'Remark',
+        menuPermission: 'Menu Permission',
+        dataScope: 'Data Scope',
+        createTime: 'Create Time',
+        form: {
+          roleName: {
+            required: 'Please enter Role Name',
+            invalid: 'Role Name cannot be empty'
+          },
+          roleKey: {
+            required: 'Please enter Role Key',
+            invalid: 'Role Key cannot be empty'
+          },
+          roleSort: {
+            required: 'Please enter Role Sort',
+            invalid: 'Role Sort cannot be empty'
+          },
+          status: {
+            required: 'Please select Status',
+            invalid: 'Status cannot be empty'
+          },
+          remark: {
+            required: 'Please enter Remark',
+            invalid: 'Remark cannot be empty'
+          },
+          menuIds: {
+            required: 'Please select Menu Permission',
+            invalid: 'Menu Permission cannot be empty'
+          },
+          deptIds: {
+            required: 'Please select Dept Permission',
+            invalid: 'Dept Permission cannot be empty'
+          }
+        },
+        addRole: 'Add Role',
+        editRole: 'Edit Role',
+        configPermission: 'Assign Permissions',
+        authorizedUsers: 'Assign Users',
+        selectMenuPermission: 'Select Menu Permission',
+        selectDataScope: 'Select Data Scope',
+        selectDeptPermission: 'Select Dept Permission'
+      },
+      tenant: {
+        title: 'Tenant List',
+        tenantName: 'Tenant Name',
+        tenantId: 'Tenant ID',
+        contactUserName: 'Contact Person',
+        contactPhone: 'Contact Phone',
+        companyName: 'Company Name',
+        licenseNumber: 'License Number',
+        address: 'Address',
+        intro: 'Introduction',
+        domain: 'Domain',
+        packageId: 'Tenant Package',
+        expireTime: 'Expiration Time',
+        accountCount: 'Account Count',
+        status: 'Status',
+        createTime: 'Create Time',
+        form: {
+          tenantName: {
+            required: 'Please enter Tenant Name',
+            invalid: 'Tenant Name cannot be empty'
+          },
+          contactUserName: {
+            required: 'Please enter Contact Person',
+            invalid: 'Contact Person cannot be empty'
+          },
+          contactPhone: {
+            required: 'Please enter Contact Phone',
+            invalid: 'Contact Phone cannot be empty'
+          },
+          companyName: {
+            required: 'Please enter Company Name',
+            invalid: 'Company Name cannot be empty'
+          },
+          licenseNumber: {
+            required: 'Please enter License Number',
+            invalid: 'License Number cannot be empty'
+          },
+          address: {
+            required: 'Please enter Address',
+            invalid: 'Address cannot be empty'
+          },
+          intro: {
+            required: 'Please enter Introduction',
+            invalid: 'Introduction cannot be empty'
+          },
+          domain: {
+            required: 'Please enter Domain',
+            invalid: 'Domain cannot be empty'
+          },
+          packageId: {
+            required: 'Please select Tenant Package',
+            invalid: 'Tenant Package cannot be empty'
+          },
+          expireTime: {
+            required: 'Please select Expiration Time',
+            invalid: 'Expiration Time cannot be empty'
+          },
+          accountCount: {
+            required: 'Please enter Account Count',
+            invalid: 'Account Count cannot be empty'
+          },
+          status: {
+            required: 'Please select Status',
+            invalid: 'Status cannot be empty'
+          }
+        },
+        addTenant: 'Add Tenant',
+        editTenant: 'Edit Tenant'
+      },
+      tenantPackage: {
+        title: 'Tenant Package List',
+        packageName: 'Package Name',
+        menuIds: 'Menu Permission',
+        remark: 'Remark',
+        status: 'Status',
+        createTime: 'Create Time',
+        form: {
+          packageName: {
+            required: 'Please enter Package Name',
+            invalid: 'Package Name cannot be empty'
+          },
+          menuIds: {
+            required: 'Please select Menu Permission',
+            invalid: 'Menu Permission cannot be empty'
+          },
+          status: {
+            required: 'Please select Status',
+            invalid: 'Status cannot be empty'
+          },
+          remark: {
+            required: 'Please enter Remark',
+            invalid: 'Remark cannot be empty'
+          }
+        },
+        addTenantPackage: 'Add Tenant Package',
+        editTenantPackage: 'Edit Tenant Package',
+        statusChangeSuccess: 'Status modified successfully'
+      },
+      user: {
+        title: 'User List',
+        userName: 'Username',
+        nickName: 'Nickname',
+        deptName: 'Department',
+        phonenumber: 'Phone Number',
+        status: 'Status',
+        createTime: 'Create Time',
+        password: 'Password',
+        confirmPassword: 'Confirm Password',
+        gender: 'Gender',
+        roleIds: 'Roles',
+        postIds: 'Posts',
+        email: 'Email',
+        avatar: 'Avatar',
+        remark: 'Remark',
+        form: {
+          userName: {
+            required: 'Please enter Username',
+            invalid: 'Username cannot be empty'
+          },
+          nickName: {
+            required: 'Please enter Nickname',
+            invalid: 'Nickname cannot be empty'
+          },
+          deptId: {
+            required: 'Please select Department',
+            invalid: 'Department cannot be empty'
+          },
+          phonenumber: {
+            required: 'Please enter Phone Number',
+            invalid: 'Phone Number cannot be empty'
+          },
+          status: {
+            required: 'Please select Status',
+            invalid: 'Status cannot be empty'
+          },
+          password: {
+            required: 'Please enter Password',
+            invalid: 'Password cannot be empty'
+          },
+          confirmPassword: {
+            required: 'Please enter Confirm Password',
+            invalid: 'Confirm Password cannot be empty'
+          },
+          gender: {
+            required: 'Please select Gender',
+            invalid: 'Gender cannot be empty'
+          },
+          roleIds: {
+            required: 'Please select Roles',
+            invalid: 'Roles cannot be empty'
+          },
+          postIds: {
+            required: 'Please select Posts',
+            invalid: 'Posts cannot be empty'
+          },
+          email: {
+            required: 'Please enter Email',
+            invalid: 'Email cannot be empty'
+          },
+          remark: {
+            required: 'Please enter Remark',
+            invalid: 'Remark cannot be empty'
+          }
+        },
+        addUser: 'Add User',
+        editUser: 'Edit User',
+        resetPassword: 'Reset Password',
+        importUsers: 'Import Users',
+        exportTemplate: 'Export Template',
+        importSuccess: 'Import successful',
+        statusChangeSuccess: 'Status modified successfully'
+      }
+    },
+    about: {
+      title: 'About',
+      introduction: `RuoYi-Plus-Soybean is a modern, enterprise-level multi-tenant management system. It combines the powerful backend capabilities of RuoYi-Vue-Plus with the modern frontend features of Soybean Admin, providing developers with a complete enterprise management solution.`,
+      projectInfo: {
+        title: 'Project Info',
+        version: 'Version',
+        latestBuildTime: 'Latest Build Time',
+        documentLink: 'Document Link',
+        previewLink: 'Preview Link',
+        repositoryLink: 'Repository Link'
+      },
+      prdDep: 'Production Dependency',
+      devDep: 'Development Dependency'
     }
   },
   form: {
@@ -333,6 +1212,10 @@ const local: App.I18n.Schema = {
     email: {
       required: 'Please enter email',
       invalid: 'Email format is incorrect'
+    },
+    tenantId: {
+      required: 'Please enter tenant id',
+      invalid: 'TenantId format is incorrect'
     }
   },
   dropdown: {
@@ -362,6 +1245,50 @@ const local: App.I18n.Schema = {
       left: 'Left Fixed',
       right: 'Right Fixed',
       unFixed: 'Unfixed'
+    }
+  },
+  component: {
+    upload: {
+      tipStart: 'Please upload',
+      tipCount: 'no more than',
+      tipCountUnit: '',
+      tipSize: 'each under',
+      tipSizeUnit: 'MB',
+      tipFormat: 'in',
+      tipSeparator: ',',
+      tipConnector: '',
+      tipFile: 'files',
+      tipImage: 'images',
+      dragTip: 'Click or drag files to this area to upload',
+      invalidFormat: 'Invalid file format, please upload files in {formats}!',
+      invalidFileName: 'Invalid file name, the file name cannot contain commas!',
+      tooLarge: 'The file size cannot exceed {size} MB!',
+      uploadSuccess: 'Upload Success',
+      uploadFailed: 'Upload Failed'
+    },
+    treeOperations: {
+      expandCollapse: 'Expand/Collapse',
+      checkAll: 'Select All',
+      cascade: 'Link Parent and Child'
+    },
+    tenantSelect: {
+      placeholder: 'Please select tenant',
+      switchSuccess: 'Tenant switched successfully',
+      switchDefaultSuccess: 'Switched to the default tenant'
+    },
+    postSelect: {
+      placeholder: 'Please select post'
+    },
+    wangEditor: {
+      placeholder: 'Please enter content...'
+    },
+    notice: {
+      title: 'Notifications',
+      readAll: 'Mark all as read',
+      readAllConfirm: 'Mark all of them as read?',
+      read: 'Read',
+      unread: 'Unread',
+      toGitee: 'Go to Gitee'
     }
   }
 };

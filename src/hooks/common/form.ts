@@ -2,6 +2,7 @@ import { ref, toValue } from 'vue';
 import type { ComputedRef, Ref } from 'vue';
 import type { FormInst } from 'naive-ui';
 import { REG_CODE_SIX, REG_EMAIL, REG_PHONE, REG_PWD, REG_USER_NAME } from '@/constants/reg';
+import { isNull } from '@/utils/common';
 import { $t } from '@/locales';
 
 export function useFormRules() {
@@ -9,7 +10,7 @@ export function useFormRules() {
     userName: {
       pattern: REG_USER_NAME,
       message: $t('form.userName.invalid'),
-      trigger: 'change'
+      trigger: ['change', 'blur']
     },
     phone: {
       pattern: REG_PHONE,
@@ -19,7 +20,7 @@ export function useFormRules() {
     pwd: {
       pattern: REG_PWD,
       message: $t('form.pwd.invalid'),
-      trigger: 'change'
+      trigger: ['change', 'blur']
     },
     code: {
       pattern: REG_CODE_SIX,
@@ -37,18 +38,31 @@ export function useFormRules() {
     userName: [createRequiredRule($t('form.userName.required')), patternRules.userName],
     phone: [createRequiredRule($t('form.phone.required')), patternRules.phone],
     pwd: [createRequiredRule($t('form.pwd.required')), patternRules.pwd],
-    code: [createRequiredRule($t('form.code.required'))],
-    email: [createRequiredRule($t('form.email.required')), patternRules.email]
+    code: [createRequiredRule($t('form.code.required')), patternRules.code],
+    email: [createRequiredRule($t('form.email.required')), patternRules.email],
+    tenantId: [createRequiredRule($t('form.tenantId.required'))]
   } satisfies Record<string, App.Global.FormRule[]>;
 
   /** the default required rule */
   const defaultRequiredRule = createRequiredRule($t('form.required'));
 
+  /** the default number required rule */
+
   function createRequiredRule(message: string): App.Global.FormRule {
     return {
       required: true,
-      message
+      trigger: ['input', 'blur'],
+      validator: (_rule: any, value: any) => {
+        if (isNull(value) || (Array.isArray(value) && value.length === 0)) {
+          return new Error(message);
+        }
+        return true;
+      }
     };
+  }
+
+  function createNumberRequiredRule(message: string): App.Global.FormRule {
+    return { ...createRequiredRule(message), type: 'number' };
   }
 
   /** create a rule for confirming the password */
@@ -74,7 +88,8 @@ export function useFormRules() {
     formRules,
     defaultRequiredRule,
     createRequiredRule,
-    createConfirmPwdRule
+    createConfirmPwdRule,
+    createNumberRequiredRule
   };
 }
 

@@ -6,11 +6,13 @@ import json5 from 'json5';
  * @param env The current env
  */
 export function createServiceConfig(env: Env.ImportMeta) {
-  const { VITE_SERVICE_BASE_URL, VITE_OTHER_SERVICE_BASE_URL } = env;
+  const { VITE_SERVICE_BASE_URL, VITE_OTHER_SERVICE_BASE_URL, VITE_APP_BASE_API, VITE_APP_WEBSOCKET } = env;
 
   let other = {} as Record<App.Service.OtherBaseURLKey, string>;
   try {
-    other = json5.parse(VITE_OTHER_SERVICE_BASE_URL);
+    if (VITE_OTHER_SERVICE_BASE_URL) {
+      other = json5.parse(VITE_OTHER_SERVICE_BASE_URL);
+    }
   } catch {
     // eslint-disable-next-line no-console
     console.error('VITE_OTHER_SERVICE_BASE_URL is not a valid json5 string');
@@ -26,6 +28,7 @@ export function createServiceConfig(env: Env.ImportMeta) {
   const otherConfig: App.Service.OtherServiceConfigItem[] = otherHttpKeys.map(key => {
     return {
       key,
+      ws: false,
       baseURL: httpConfig.other[key],
       proxyPattern: createProxyPattern(key)
     };
@@ -33,7 +36,8 @@ export function createServiceConfig(env: Env.ImportMeta) {
 
   const config: App.Service.ServiceConfig = {
     baseURL: httpConfig.baseURL,
-    proxyPattern: createProxyPattern(),
+    ws: VITE_APP_WEBSOCKET === 'Y',
+    proxyPattern: VITE_APP_BASE_API,
     other: otherConfig
   };
 
@@ -46,8 +50,8 @@ export function createServiceConfig(env: Env.ImportMeta) {
  * @param env - the current env
  * @param isProxy - if use proxy
  */
-export function getServiceBaseURL(env: Env.ImportMeta, isProxy: boolean) {
-  const { baseURL, other } = createServiceConfig(env);
+export function getServiceBaseURL(env: Env.ImportMeta, isProxy: boolean = env.DEV && env.VITE_HTTP_PROXY === 'Y') {
+  const { baseURL, other, proxyPattern } = createServiceConfig(env);
 
   const otherBaseURL = {} as Record<App.Service.OtherBaseURLKey, string>;
 
@@ -56,7 +60,7 @@ export function getServiceBaseURL(env: Env.ImportMeta, isProxy: boolean) {
   });
 
   return {
-    baseURL: isProxy ? createProxyPattern() : baseURL,
+    baseURL: isProxy ? proxyPattern : (baseURL || '') + proxyPattern,
     otherBaseURL
   };
 }
@@ -66,10 +70,6 @@ export function getServiceBaseURL(env: Env.ImportMeta, isProxy: boolean) {
  *
  * @param key If not set, will use the default key
  */
-function createProxyPattern(key?: App.Service.OtherBaseURLKey) {
-  if (!key) {
-    return '/proxy-default';
-  }
-
+function createProxyPattern(key: App.Service.OtherBaseURLKey) {
   return `/proxy-${key}`;
 }

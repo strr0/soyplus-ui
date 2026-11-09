@@ -126,6 +126,20 @@ declare namespace App {
         /** Time format for watermark text */
         timeFormat: string;
       };
+      table: {
+        /** Whether to show the table border */
+        bordered: boolean;
+        /** Whether to show the table bottom border */
+        bottomBordered: boolean;
+        /** Whether to show the table single column */
+        singleColumn: boolean;
+        /** Whether to show the table single line */
+        singleLine: boolean;
+        /** Whether to show the table size */
+        size: UnionKey.ThemeTableSize;
+        /** Whether to show the table striped */
+        striped: boolean;
+      };
       /** define some theme settings tokens, will transform to css variables */
       tokens: {
         light: ThemeSettingToken;
@@ -300,11 +314,10 @@ declare namespace App {
       key: LangType;
     };
 
-    type I18nRouteKey = string;
-
     type FormMsg = {
       required: string;
       invalid: string;
+      tooltip?: string;
     };
 
     type Schema = {
@@ -321,6 +334,20 @@ declare namespace App {
         addSuccess: string;
         backToHome: string;
         batchDelete: string;
+        import: string;
+        export: string;
+        importSuccess: string;
+        importFail: string;
+        importTemplate: string;
+        downloadTemplate: string;
+        importResult: string;
+        importEnd: string;
+        importFormat: string;
+        importSize: string;
+        importTip: string;
+        exportSuccess: string;
+        exportFail: string;
+        updateExisting: string;
         cancel: string;
         close: string;
         check: string;
@@ -328,11 +355,14 @@ declare namespace App {
         expandColumn: string;
         columnSetting: string;
         config: string;
+        login: string;
         confirm: string;
+        save: string;
         delete: string;
         deleteSuccess: string;
         confirmDelete: string;
         edit: string;
+        download: string;
         warning: string;
         error: string;
         index: string;
@@ -353,10 +383,30 @@ declare namespace App {
         trigger: string;
         update: string;
         updateSuccess: string;
+        saveSuccess: string;
+        noChange: string;
         userCenter: string;
         yesOrNo: {
           yes: string;
           no: string;
+        };
+        second: string;
+        selected: string;
+        anyRecords: string;
+        clear: string;
+        noSelectRecord: string;
+        systemTip: string;
+        message: string;
+        downloading: string;
+        downloadSuccess: string;
+        copySuccess: string;
+        copyUnsupported: string;
+        switchConfirm: string;
+        errorCode: {
+          unauthorized: string;
+          forbidden: string;
+          notFound: string;
+          unknown: string;
         };
       };
       request: {
@@ -366,6 +416,9 @@ declare namespace App {
         logoutWithModalMsg: string;
         refreshToken: string;
         tokenExpired: string;
+        sessionExpired: string;
+        relogin: string;
+        repeatSubmit: string;
       };
       theme: {
         themeDrawerTitle: string;
@@ -476,11 +529,25 @@ declare namespace App {
           resetSuccessMsg: string;
         };
       };
-      route: Record<I18nRouteKey, string>;
+      dict: Record<string, Record<string, string>>;
       page: {
+        common: {
+          id: string;
+          createBy: string;
+          createTime: string;
+          updateBy: string;
+          updateTime: string;
+          remark: string;
+          form: {
+            remark: FormMsg;
+          };
+        };
         login: {
           common: {
+            title: string;
+            subTitle: string;
             loginOrRegister: string;
+            register: string;
             userNamePlaceholder: string;
             phonePlaceholder: string;
             codePlaceholder: string;
@@ -492,9 +559,14 @@ declare namespace App {
             validateSuccess: string;
             loginSuccess: string;
             welcomeBack: string;
+            phoneDesc: string;
+            noCaptcha: string;
           };
           pwdLogin: {
             title: string;
+            heading: string;
+            desc: string;
+            noAccount: string;
             rememberMe: string;
             forgetPassword: string;
             register: string;
@@ -513,6 +585,10 @@ declare namespace App {
           };
           register: {
             title: string;
+            heading: string;
+            desc: string;
+            hasAccount: string;
+            registerSuccess: string;
             agreement: string;
             protocol: string;
             policy: string;
@@ -552,6 +628,414 @@ declare namespace App {
           };
           creativity: string;
         };
+        system: {
+          client: {
+            title: string;
+            clientId: string;
+            clientKey: string;
+            clientSecret: string;
+            grantTypeList: string;
+            deviceType: string;
+            activeTimeout: string;
+            timeout: string;
+            status: string;
+            form: {
+              clientId: FormMsg;
+              clientKey: FormMsg;
+              clientSecret: FormMsg;
+              grantTypeList: FormMsg;
+              deviceType: FormMsg;
+              activeTimeout: FormMsg;
+              timeout: FormMsg;
+              status: FormMsg;
+            };
+            addClient: string;
+            editClient: string;
+          };
+          config: {
+            title: string;
+            configName: string;
+            configKey: string;
+            configValue: string;
+            configType: string;
+            remark: string;
+            createTime: string;
+            refreshCache: string;
+            refreshCacheSuccess: string;
+            form: {
+              configId: FormMsg;
+              configName: FormMsg;
+              configKey: FormMsg;
+              configValue: FormMsg;
+              configType: FormMsg;
+              remark: FormMsg;
+            };
+            addConfig: string;
+            editConfig: string;
+          };
+          dept: {
+            empty: string;
+            title: string;
+            parentId: string;
+            deptName: string;
+            orderNum: string;
+            deptCategory: string;
+            leader: string;
+            phone: string;
+            email: string;
+            status: string;
+            sort: string;
+            createTime: string;
+            expandAll: string;
+            collapseAll: string;
+            form: {
+              parentId: FormMsg;
+              deptName: FormMsg;
+              orderNum: FormMsg;
+              deptCategory: FormMsg;
+              leader: FormMsg;
+              phone: FormMsg;
+              email: FormMsg;
+              status: FormMsg;
+              sort: FormMsg;
+              deptId: FormMsg;
+            };
+            error: {
+              getDeptDataFail: string;
+              getDeptUserDataFail: string;
+            };
+            placeholder: {
+              defaultLeaderPlaceHolder: string;
+              addDataLeaderPlaceHolder: string;
+              deptUserIsEmptyLeaderPlaceHolder: string;
+            };
+            addDept: string;
+            editDept: string;
+          };
+          dict: {
+            title: string;
+            dictTypeTitle: string;
+            dictName: string;
+            dictType: string;
+            status: string;
+            remark: string;
+            createTime: string;
+            refreshCacheSuccess: string;
+            refreshCache: string;
+            confirmDeleteDictType: string;
+            data: {
+              title: string;
+              label: string;
+              value: string;
+              dictSort: string;
+              isDefault: string;
+              listClass: string;
+              cssClass: string;
+              status: string;
+              remark: string;
+              createTime: string;
+            };
+            form: {
+              dictId: FormMsg;
+              dictCode: FormMsg;
+              dictName: FormMsg;
+              dictType: FormMsg;
+              status: FormMsg;
+              remark: FormMsg;
+              dictLabel: FormMsg;
+              dictValue: FormMsg;
+              dictSort: FormMsg;
+              isDefault: FormMsg;
+              listClass: FormMsg;
+              cssClass: FormMsg;
+            };
+            addDict: string;
+            editDict: string;
+            addDictData: string;
+            editDictData: string;
+            addDictType: string;
+            editDictType: string;
+            exportDictType: string;
+            refreshDictType: string;
+            dictTypeIsEmpty: string;
+          };
+          menu: {
+            title: string;
+            parentId: string;
+            iconType: string;
+            menuName: string;
+            icon: string;
+            orderNum: string;
+            perms: string;
+            component: string;
+            path: string;
+            externalPath: string;
+            query: string;
+            iframeQuery: string;
+            isFrame: string;
+            isCache: string;
+            menuType: string;
+            visible: string;
+            status: string;
+            createTime: string;
+            cache: string;
+            noCache: string;
+            rootName: string;
+            buttonPermissionList: string;
+            emptyMenu: string;
+            menuDetail: string;
+            cascadeDeleteContent: string;
+            iconifyTip: string;
+            isFrameTip: string;
+            isCacheTip: string;
+            visibleTip: string;
+            statusTip: string;
+            permsTip: string;
+            componentTip: string;
+            pathTip: string;
+            form: {
+              parentId: FormMsg;
+              menuType: FormMsg;
+              menuIds: FormMsg;
+              icon: FormMsg;
+              menuName: FormMsg;
+              orderNum: FormMsg;
+              perms: FormMsg;
+              isFrame: FormMsg;
+              path: FormMsg;
+              component: FormMsg;
+              query: FormMsg;
+              isCache: FormMsg;
+              visible: FormMsg;
+              status: FormMsg;
+              permission: FormMsg;
+            };
+            placeholder: {
+              iconifyIconPlaceholder: string;
+              localIconPlaceholder: string;
+              queryKey: string;
+              queryValue: string;
+              queryIframe: string;
+            };
+            directory: string;
+            menu: string;
+            button: string;
+            addMenu: string;
+            addChildMenu: string;
+            editMenu: string;
+            cascadeDelete: string;
+          };
+          notice: {
+            title: string;
+            noticeTitle: string;
+            noticeType: string;
+            noticeContent: string;
+            status: string;
+            createTime: string;
+            form: {
+              noticeTitle: FormMsg;
+              noticeType: FormMsg;
+              noticeContent: FormMsg;
+              status: FormMsg;
+            };
+            addNotice: string;
+            editNotice: string;
+          };
+          oss: {
+            title: string;
+            fileName: string;
+            originalName: string;
+            fileSuffix: string;
+            url: string;
+            createTime: string;
+            service: string;
+            form: {
+              file: FormMsg;
+            };
+            upload: string;
+            preview: string;
+            download: string;
+            copy: string;
+            copySuccess: string;
+          };
+          ossConfig: {
+            title: string;
+            configKey: string;
+            accessKey: string;
+            secretKey: string;
+            bucketName: string;
+            prefix: string;
+            endpoint: string;
+            domain: string;
+            isHttps: string;
+            region: string;
+            status: string;
+            remark: string;
+            createTime: string;
+            form: {
+              configKey: FormMsg;
+              accessKey: FormMsg;
+              secretKey: FormMsg;
+              bucketName: FormMsg;
+              prefix: FormMsg;
+              endpoint: FormMsg;
+              domain: FormMsg;
+              isHttps: FormMsg;
+              region: FormMsg;
+              status: FormMsg;
+              remark: FormMsg;
+            };
+            addOssConfig: string;
+            editOssConfig: string;
+          };
+          post: {
+            title: string;
+            postCode: string;
+            postName: string;
+            postSort: string;
+            status: string;
+            remark: string;
+            createTime: string;
+            form: {
+              postCode: FormMsg;
+              postName: FormMsg;
+              postSort: FormMsg;
+              status: FormMsg;
+              remark: FormMsg;
+            };
+            addPost: string;
+            editPost: string;
+          };
+          role: {
+            title: string;
+            roleName: string;
+            roleKey: string;
+            roleSort: string;
+            status: string;
+            remark: string;
+            menuPermission: string;
+            dataScope: string;
+            createTime: string;
+            form: {
+              roleName: FormMsg;
+              roleKey: FormMsg;
+              roleSort: FormMsg;
+              status: FormMsg;
+              remark: FormMsg;
+              menuIds: FormMsg;
+              deptIds: FormMsg;
+            };
+            addRole: string;
+            editRole: string;
+            configPermission: string;
+            authorizedUsers: string;
+            selectMenuPermission: string;
+            selectDataScope: string;
+            selectDeptPermission: string;
+          };
+          tenant: {
+            title: string;
+            tenantName: string;
+            tenantId: string;
+            contactUserName: string;
+            contactPhone: string;
+            companyName: string;
+            licenseNumber: string;
+            address: string;
+            intro: string;
+            domain: string;
+            packageId: string;
+            expireTime: string;
+            accountCount: string;
+            status: string;
+            createTime: string;
+            form: {
+              tenantName: FormMsg;
+              contactUserName: FormMsg;
+              contactPhone: FormMsg;
+              companyName: FormMsg;
+              licenseNumber: FormMsg;
+              address: FormMsg;
+              intro: FormMsg;
+              domain: FormMsg;
+              packageId: FormMsg;
+              expireTime: FormMsg;
+              accountCount: FormMsg;
+              status: FormMsg;
+            };
+            addTenant: string;
+            editTenant: string;
+          };
+          tenantPackage: {
+            title: string;
+            packageName: string;
+            menuIds: string;
+            remark: string;
+            status: string;
+            createTime: string;
+            form: {
+              packageName: FormMsg;
+              menuIds: FormMsg;
+              status: FormMsg;
+              remark: FormMsg;
+            };
+            addTenantPackage: string;
+            editTenantPackage: string;
+            statusChangeSuccess: string;
+          };
+          user: {
+            title: string;
+            userName: string;
+            nickName: string;
+            deptName: string;
+            phonenumber: string;
+            status: string;
+            createTime: string;
+            password: string;
+            confirmPassword: string;
+            gender: string;
+            roleIds: string;
+            postIds: string;
+            email: string;
+            avatar: string;
+            remark: string;
+            form: {
+              userName: FormMsg;
+              nickName: FormMsg;
+              deptId: FormMsg;
+              phonenumber: FormMsg;
+              status: FormMsg;
+              password: FormMsg;
+              confirmPassword: FormMsg;
+              gender: FormMsg;
+              roleIds: FormMsg;
+              postIds: FormMsg;
+              email: FormMsg;
+              remark: FormMsg;
+            };
+            addUser: string;
+            editUser: string;
+            resetPassword: string;
+            importUsers: string;
+            exportTemplate: string;
+            importSuccess: string;
+            statusChangeSuccess: string;
+          };
+        };
+        about: {
+          title: string;
+          introduction: string;
+          projectInfo: {
+            title: string;
+            version: string;
+            latestBuildTime: string;
+            documentLink: string;
+            previewLink: string;
+            repositoryLink: string;
+          };
+          prdDep: string;
+          devDep: string;
+        };
       };
       form: {
         required: string;
@@ -561,6 +1045,7 @@ declare namespace App {
         confirmPwd: FormMsg;
         code: FormMsg;
         email: FormMsg;
+        tenantId: FormMsg;
       };
       dropdown: Record<Global.DropdownKey, string>;
       icon: {
@@ -581,6 +1066,50 @@ declare namespace App {
           left: string;
           right: string;
           unFixed: string;
+        };
+      };
+      component: {
+        upload: {
+          tipStart: string;
+          tipCount: string;
+          tipCountUnit: string;
+          tipSize: string;
+          tipSizeUnit: string;
+          tipFormat: string;
+          tipSeparator: string;
+          tipConnector: string;
+          tipFile: string;
+          tipImage: string;
+          dragTip: string;
+          invalidFormat: string;
+          invalidFileName: string;
+          tooLarge: string;
+          uploadSuccess: string;
+          uploadFailed: string;
+        };
+        treeOperations: {
+          expandCollapse: string;
+          checkAll: string;
+          cascade: string;
+        };
+        tenantSelect: {
+          placeholder: string;
+          switchSuccess: string;
+          switchDefaultSuccess: string;
+        };
+        postSelect: {
+          placeholder: string;
+        };
+        wangEditor: {
+          placeholder: string;
+        };
+        notice: {
+          title: string;
+          readAll: string;
+          readAllConfirm: string;
+          read: string;
+          unread: string;
+          toGitee: string;
         };
       };
     };
@@ -611,13 +1140,14 @@ declare namespace App {
   /** Service namespace */
   namespace Service {
     /** Other baseURL key */
-    type OtherBaseURLKey = 'demo';
+    type OtherBaseURLKey = string;
 
     interface ServiceConfigItem {
       /** The backend service base url */
       baseURL: string;
       /** The proxy pattern of the backend service base url */
       proxyPattern: string;
+      ws?: boolean;
     }
 
     interface OtherServiceConfigItem extends ServiceConfigItem {
@@ -642,16 +1172,8 @@ declare namespace App {
       msg: string;
       /** The backend service response data */
       data: T;
-    };
-
-    /** The demo backend service response data */
-    type DemoResponse<T = unknown> = {
-      /** The backend service response code */
-      status: string;
-      /** The backend service response message */
-      message: string;
-      /** The backend service response data */
-      result: T;
+      rows?: any[];
+      total?: number;
     };
   }
 }

@@ -75,16 +75,17 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
   /** Watermark content */
   const watermarkContent = computed(() => {
     const { watermark } = settings.value;
+    let content = watermark.text;
 
-    if (watermark.enableUserName && authStore.userInfo.user.userName) {
-      return authStore.userInfo.user.userName;
+    if (watermark.enableUserName && authStore.userInfo.user?.userName) {
+      content = `${authStore.userInfo.user.userName}@${content}`;
     }
 
     if (watermark.enableTime) {
-      return formattedWatermarkTime.value;
+      content = `${content} ${formattedWatermarkTime.value}`;
     }
 
-    return watermark.text;
+    return content;
   });
 
   /** Reset store */
@@ -184,7 +185,7 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
     settings.value.watermark.enableUserName = enable;
 
     if (enable) {
-      settings.value.watermark.enableTime = false;
+      // settings.value.watermark.enableTime = false;
     }
   }
 
@@ -197,7 +198,7 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
     settings.value.watermark.enableTime = enable;
 
     if (enable) {
-      settings.value.watermark.enableUserName = false;
+      // settings.value.watermark.enableUserName = false;
     }
   }
 

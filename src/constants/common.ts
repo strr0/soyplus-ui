@@ -6,3 +6,10 @@ export const yesOrNoRecord: Record<CommonType.YesOrNo, App.I18n.I18nKey> = {
 };
 
 export const yesOrNoOptions = transformRecordToOption(yesOrNoRecord);
+
+export const errorCodeRecord: Record<CommonType.ErrorCode, App.I18n.I18nKey> = {
+  '401': 'common.errorCode.unauthorized',
+  '403': 'common.errorCode.forbidden',
+  '404': 'common.errorCode.notFound',
+  default: 'common.errorCode.unknown'
+};

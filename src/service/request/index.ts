@@ -1,61 +1,81 @@
-import type { AxiosResponse } from 'axios';
-import { BACKEND_ERROR_CODE, createFlatRequest } from '@sa/axios';
+import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { BACKEND_ERROR_CODE, REQUEST_CANCELED_CODE, createFlatRequest } from '@sa/axios';
+import { decryptBase64, decryptWithAes, encryptBase64, encryptWithAes, generateAesKey } from '@/utils/crypto';
+import { decrypt, encrypt } from '@/utils/jsencrypt';
 import { getServiceBaseURL } from '@/utils/service';
+import { localStg, sessionStg } from '@/utils/storage';
 import { $t } from '@/locales';
 import { useAuthStore } from '@/store/modules/auth';
-import { getAuthorization, showErrorMsg } from './shared';
-import { ENCRYPT_HEADER, decryptResponse, encryptRequest, isEncryptEnabled } from './encrypt';
+import { getAuthorization, handleExpiredRequest, showErrorMsg } from './shared';
 import type { RequestInstanceState } from './type';
 
+const encryptHeader = import.meta.env.VITE_HEADER_FLAG || 'encrypt-key';
 const isHttpProxy = import.meta.env.DEV && import.meta.env.VITE_HTTP_PROXY === 'Y';
 const { baseURL } = getServiceBaseURL(import.meta.env, isHttpProxy);
 
 export const request = createFlatRequest(
   {
-    baseURL
+    baseURL,
+    'axios-retry': {
+      retries: 0
+    }
   },
   {
     defaultState: {
-      errMsgStack: []
+      errMsgStack: [],
+      refreshTokenPromise: null
     } as RequestInstanceState,
     transform(response: AxiosResponse<App.Service.Response<any>>) {
+      // 二进制数据则直接返回
+      if (response.request.responseType === 'blob' || response.request.responseType === 'arraybuffer') {
+        return response.data;
+      }
+
+      if (response.data.rows) {
+        return response.data;
+      }
+
       return response.data.data;
     },
     async onRequest(config) {
-      const Authorization = getAuthorization();
-      Object.assign(config.headers, { Authorization, clientid: import.meta.env.VITE_APP_CLIENT_ID });
-
-      // encrypt the request body when the api marks `isEncrypt` and the encrypt is enabled
-      if (
-        isEncryptEnabled() &&
-        String(config.headers.isEncrypt) === 'true' &&
-        ['post', 'put'].includes(config.method || '')
-      ) {
-        const { body, keyHeader } = encryptRequest(config.data);
-
-        config.data = body;
-        config.headers[ENCRYPT_HEADER] = keyHeader;
+      const isToken = config.headers?.isToken === false;
+      // set token
+      const token = localStg.get('token');
+      if (token && !isToken) {
+        const Authorization = getAuthorization();
+        Object.assign(config.headers, { Authorization });
       }
-      // the encrypt flag is only a internal marker, never send it as a header
-      delete config.headers.isEncrypt;
+
+      // 客户端 ID
+      config.headers.Clientid = import.meta.env.VITE_APP_CLIENT_ID;
+      // 对应国际化资源文件后缀
+      config.headers['Content-Language'] = (localStg.get('lang') || 'zh-CN').replace('-', '_');
+
+      handleRepeatSubmit(config);
+
+      handleEncrypt(config);
+
+      // FormData数据去请求头Content-Type
+      if (config.data instanceof FormData) {
+        delete config.headers['Content-Type'];
+      }
 
       return config;
     },
-    onResponse(response) {
-      if (!isEncryptEnabled()) return;
-
-      // decrypt the response body when the backend returns the encrypted aes key in the header
-      const keyStr = response.headers[ENCRYPT_HEADER];
-      if (keyStr) {
-        response.data = decryptResponse(keyStr, response.data);
-      }
-    },
     isBackendSuccess(response) {
-      // when the backend response code is "200"(default of RuoYi), it means the request is success
+      // when the backend response code is "0000"(default), it means the request is success
       // to change this logic by yourself, you can modify the `VITE_SERVICE_SUCCESS_CODE` in `.env` file
+      if (import.meta.env.VITE_APP_ENCRYPT === 'Y' && response.headers[encryptHeader]) {
+        const keyStr = response.headers[encryptHeader];
+        const data = String(response.data);
+        const base64Str = decrypt(keyStr);
+        const aesKey = decryptBase64(base64Str.toString());
+        const decryptData = decryptWithAes(data, aesKey);
+        response.data = JSON.parse(decryptData);
+      }
       return String(response.data.code) === import.meta.env.VITE_SERVICE_SUCCESS_CODE;
     },
-    async onBackendFail(response) {
+    async onBackendFail(response, instance) {
       const authStore = useAuthStore();
       const responseCode = String(response.data.code);
 
@@ -70,28 +90,39 @@ export const request = createFlatRequest(
         request.state.errMsgStack = request.state.errMsgStack.filter(msg => msg !== response.data.msg);
       }
 
+      const isLogin = Boolean(localStg.get('token'));
+
       // when the backend response code is in `logoutCodes`, it means the user will be logged out and redirected to login page
-      // for RuoYi, the token expired / unauthorized code is 401
       const logoutCodes = import.meta.env.VITE_SERVICE_LOGOUT_CODES?.split(',') || [];
-      if (logoutCodes.includes(responseCode)) {
-        handleLogout();
+      if (logoutCodes.includes(responseCode) && !isLogin) {
+        logoutAndCleanup();
         return null;
       }
 
       // when the backend response code is in `modalLogoutCodes`, it means the user will be logged out by displaying a modal
       const modalLogoutCodes = import.meta.env.VITE_SERVICE_MODAL_LOGOUT_CODES?.split(',') || [];
-      if (modalLogoutCodes.includes(responseCode) && !request.state.errMsgStack?.includes(response.data.msg)) {
+      if (modalLogoutCodes.includes(responseCode) && isLogin) {
+        const isExist = request.state.errMsgStack?.includes(response.data.msg);
+        if (isExist) {
+          return null;
+        }
+        if (window.location.pathname?.startsWith('/login')) {
+          logoutAndCleanup();
+          return null;
+        }
+
         request.state.errMsgStack = [...(request.state.errMsgStack || []), response.data.msg];
 
-        // prevent the user from refreshing the page
-        window.addEventListener('beforeunload', handleLogout);
-
-        window.$dialog?.error({
-          title: $t('common.error'),
-          content: response.data.msg,
-          positiveText: $t('common.confirm'),
+        window.$dialog?.warning({
+          title: $t('common.systemTip'),
+          content: $t('request.sessionExpired'),
+          positiveText: $t('request.relogin'),
           maskClosable: false,
           closeOnEsc: false,
+          onAfterEnter() {
+            // prevent the user from refreshing the page
+            window.addEventListener('beforeunload', handleLogout);
+          },
           onPositiveClick() {
             logoutAndCleanup();
           },
@@ -99,14 +130,29 @@ export const request = createFlatRequest(
             logoutAndCleanup();
           }
         });
-
+        request.cancelAllRequest();
         return null;
+      }
+
+      // when the backend response code is in `expiredTokenCodes`, it means the token is expired, and refresh token
+      // the api `refreshToken` can not return error code in `expiredTokenCodes`, otherwise it will be a dead loop, should return `logoutCodes` or `modalLogoutCodes`
+      const expiredTokenCodes = import.meta.env.VITE_SERVICE_EXPIRED_TOKEN_CODES?.split(',') || [];
+      if (expiredTokenCodes.includes(responseCode)) {
+        const success = await handleExpiredRequest(request.state);
+        if (success) {
+          const Authorization = getAuthorization();
+          Object.assign(response.config.headers, { Authorization });
+
+          return instance.request(response.config) as Promise<AxiosResponse>;
+        }
       }
 
       return null;
     },
     onError(error) {
-      // when the request is fail, you can show error message
+      if (error.code === REQUEST_CANCELED_CODE) {
+        return;
+      }
 
       let message = error.message;
       let backendErrorCode = '';
@@ -123,7 +169,60 @@ export const request = createFlatRequest(
         return;
       }
 
+      // when the token is expired, refresh token and retry request, so no need to show error message
+      const expiredTokenCodes = import.meta.env.VITE_SERVICE_EXPIRED_TOKEN_CODES?.split(',') || [];
+      if (expiredTokenCodes.includes(backendErrorCode)) {
+        return;
+      }
+
       showErrorMsg(request.state, message);
     }
   }
 );
+
+function handleRepeatSubmit(config: InternalAxiosRequestConfig) {
+  // 是否需要防止数据重复提交
+  const isRepeatSubmit = config.headers?.repeatSubmit === false;
+
+  if (!isRepeatSubmit && (config.method === 'post' || config.method === 'put')) {
+    const requestObj = {
+      url: config.url!,
+      data: typeof config.data === 'object' ? JSON.stringify(config.data) : config.data,
+      time: new Date().getTime()
+    };
+    const sessionObj = sessionStg.get('sessionObj');
+    if (!sessionObj) {
+      sessionStg.set('sessionObj', requestObj);
+    } else {
+      const s_url = sessionObj.url; // 请求地址
+      const s_data = sessionObj.data; // 请求数据
+      const s_time = sessionObj.time; // 请求时间
+      const interval = 500; // 间隔时间(ms)，小于此时间视为重复提交
+      if (s_data === requestObj.data && requestObj.time - s_time < interval && s_url === requestObj.url) {
+        const message = $t('request.repeatSubmit');
+        // eslint-disable-next-line no-console
+        console.warn(`[${s_url}]: ${message}`);
+        throw new Error(message);
+      }
+      sessionStg.set('sessionObj', requestObj);
+    }
+  }
+}
+
+function handleEncrypt(config: InternalAxiosRequestConfig) {
+  // 是否需要加密
+  const isEncrypt = config.headers?.isEncrypt === 'true';
+
+  if (import.meta.env.VITE_APP_ENCRYPT === 'Y') {
+    // 当开启参数加密
+    if (isEncrypt && (config.method === 'post' || config.method === 'put')) {
+      // 生成一个 AES 密钥
+      const aesKey = generateAesKey();
+      config.headers[encryptHeader] = encrypt(encryptBase64(aesKey));
+      config.data =
+        typeof config.data === 'object'
+          ? encryptWithAes(JSON.stringify(config.data), aesKey)
+          : encryptWithAes(config.data, aesKey);
+    }
+  }
+}

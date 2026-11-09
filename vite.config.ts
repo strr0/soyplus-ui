@@ -16,7 +16,10 @@ export default defineConfig(configEnv => {
     staged: {
       '*': 'vp check --fix'
     },
-    lint,
+    lint: {
+      ...lint,
+      ignorePatterns: ['public/streamsaver']
+    },
     fmt: {
       ...fmt,
       ignorePatterns: ['CHANGELOG.md', 'src/typings/components.d.ts']

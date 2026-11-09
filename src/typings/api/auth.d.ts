@@ -2,65 +2,109 @@ declare namespace Api {
   /**
    * namespace Auth
    *
-   * backend api module: "auth" (RuoYi-Vue-Plus)
+   * backend api module: "auth"
    */
   namespace Auth {
-    /**
-     * login request params, same as LoginData in plus-ui
-     *
-     * api: POST /auth/login
-     */
-    interface LoginData {
-      username: string;
-      password: string;
-      code?: string;
-      uuid?: string;
+    /** base login form */
+    interface LoginForm {
+      /** 客户端 ID */
       clientId?: string;
+      /** 授权类型 */
       grantType?: string;
-    }
-
-    /** login response data of RuoYi (snake_case keys), same as LoginResult in plus-ui */
-    interface LoginResult {
-      access_token: string;
-      expire_in?: number;
-      client_id?: string;
-    }
-
-    /** the user object of RuoYi, see UserVO in plus-ui (only the fields returned by getInfo are declared) */
-    interface UserVO {
-      userId: string | number;
+      /** 租户ID */
       tenantId?: string;
-      deptId?: string | number;
-      userName: string;
-      nickName: string;
-      userType?: string;
-      email?: string;
-      phoneNumber?: string;
-      sex?: string;
-      avatar?: string | number;
-      avatarUrl?: string;
-      status?: string;
-      loginIp?: string;
-      loginDate?: string;
-      remark?: string;
+      /** 验证码 */
+      code?: string;
+      /** 唯一标识 */
+      uuid?: string;
     }
 
-    /**
-     * user info returned by the api: GET /system/user/getInfo
-     *
-     * same as UserInfo in plus-ui (the RuoYi original structure)
-     */
+    /** password login form */
+    interface PwdLoginForm extends LoginForm {
+      /** 用户名 */
+      username?: string;
+      /** 密码 */
+      password?: string;
+    }
+
+    /** social login form */
+    interface SocialLoginForm extends LoginForm {
+      /** 授权码 */
+      socialCode?: string;
+      /** 授权状态 */
+      socialState?: string;
+      /** 来源 */
+      source?: string;
+    }
+
+    /** register form */
+    interface RegisterForm extends LoginForm {
+      /** 用户名 */
+      username?: string;
+      /** 密码 */
+      password?: string;
+      /** 确认密码 */
+      confirmPassword?: string;
+      /** 用户类型 */
+      userType?: string;
+    }
+
+    /** login token data */
+    interface LoginToken {
+      /** 授权令牌 */
+      access_token?: string;
+      /** 应用id */
+      client_id?: string;
+      /** 授权令牌 access_token 的有效期 */
+      expire_in?: number;
+      /** 用户 openid */
+      openid?: string;
+      /** 刷新令牌 refresh_token 的有效期 */
+      refresh_expire_in?: number;
+      /** 刷新令牌 */
+      refresh_token?: string;
+      /** 令牌权限 */
+      scope?: string;
+    }
+
+    /** userinfo */
     interface UserInfo {
-      user: UserVO;
+      /** 用户信息 */
+      user?: Api.System.User & {
+        /** 所属角色 */
+        roles: Api.System.Role[];
+      };
+      /** 角色列表 */
       roles: string[];
+      /** 菜单权限 */
       permissions: string[];
     }
 
-    /** captcha returned by the api: GET /auth/code */
-    interface Captcha {
+    /** tenant */
+    interface Tenant {
+      /** 企业名称 */
+      companyName: string;
+      /** 域名 */
+      domain: string;
+      /** 租户编号 */
+      tenantId: string;
+    }
+
+    /** login tenant */
+    interface LoginTenant {
+      /** 租户开关 */
+      tenantEnabled: boolean;
+      /** 租户列表 */
+      voList: Tenant[];
+    }
+
+    interface CaptchaCode {
+      /** 是否开启验证码 */
       captchaEnabled: boolean;
-      img: string;
-      uuid: string;
+      /** 唯一标识 */
+      uuid?: string;
+      /** 验证码图片 */
+      img?: string;
     }
   }
 }

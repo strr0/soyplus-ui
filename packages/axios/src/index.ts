@@ -2,7 +2,7 @@ import { create, AxiosError } from 'axios';
 import type { AxiosResponse, CreateAxiosDefaults, InternalAxiosRequestConfig } from 'axios';
 import { nanoid } from '@sa/utils';
 import axiosRetry from 'axios-retry';
-import { BACKEND_ERROR_CODE, REQUEST_ID_KEY } from './constant';
+import { BACKEND_ERROR_CODE, REQUEST_CANCELED_CODE, REQUEST_ID_KEY } from './constant';
 import { transformResponse } from './shared';
 import { createAxiosConfig, createDefaultOptions, createRetryOptions } from './options';
 import type {
@@ -174,6 +174,6 @@ export function createFlatRequest<ResponseData, ApiData, State extends Record<st
   return flatRequest;
 }
 
-export { BACKEND_ERROR_CODE, REQUEST_ID_KEY };
+export { BACKEND_ERROR_CODE, REQUEST_CANCELED_CODE, REQUEST_ID_KEY };
 export type * from './type';
 export type { CreateAxiosDefaults, AxiosError };

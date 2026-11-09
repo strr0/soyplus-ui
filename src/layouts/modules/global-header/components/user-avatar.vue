@@ -15,10 +15,10 @@ const { routerPushByKey, toLogin } = useRouterPush();
 const { SvgIconVNode } = useSvgIcon();
 
 /** display the nickName first, fallback to the login userName when it is empty, same as plus-ui */
-const displayName = computed(() => authStore.userInfo.user.nickName || authStore.userInfo.user.userName);
+const displayName = computed(() => authStore.userInfo.user?.nickName || authStore.userInfo.user?.userName || '');
 
 /** the avatar url of the user, empty when the user does not upload an avatar */
-const avatarUrl = computed(() => authStore.userInfo.user.avatarUrl || '');
+const avatarUrl = computed(() => authStore.userInfo.user?.avatar || '');
 
 function loginOrRegister() {
   toLogin();

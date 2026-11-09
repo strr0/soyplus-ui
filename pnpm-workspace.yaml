@@ -9,6 +9,7 @@ overrides:
   typescript: 'catalog:'
 allowBuilds:
   '@parcel/watcher': false
+  es5-ext: set this to true or false
   esbuild: false
   simple-git-hooks: false
   vue-demi: false

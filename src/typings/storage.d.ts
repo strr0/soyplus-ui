@@ -7,6 +7,11 @@ declare namespace StorageType {
     //  * the theme settings
     //  */
     // themeSettings: App.Theme.ThemeSetting;
+    sessionObj: {
+      url: string;
+      data: any;
+      time: number;
+    };
   }
 
   interface Local {
@@ -16,6 +21,8 @@ declare namespace StorageType {
     token: string;
     /** Fixed sider with mix-menu */
     mixSiderFixed: CommonType.YesOrNo;
+    /** The refresh token */
+    refreshToken: string;
     /** The theme color */
     themeColor: string;
     /** The dark mode */
@@ -36,6 +43,10 @@ declare namespace StorageType {
       siderCollapse: boolean;
     };
     /** The last login user id */
-    lastLoginUserId: string;
+    lastLoginUserId: CommonType.IdType;
+    /** The login form rember */
+    loginRember: string;
+    /** The tenant id */
+    tenantId: CommonType.IdType;
   }
 }

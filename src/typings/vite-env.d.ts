@@ -51,6 +51,14 @@ declare namespace Env {
      */
     readonly VITE_SERVICE_MODAL_LOGOUT_CODES: string;
     /**
+     * token expired codes of backend service
+     *
+     * when the code is received, it will refresh the token and resend the request
+     *
+     * use "," to separate multiple codes
+     */
+    readonly VITE_SERVICE_EXPIRED_TOKEN_CODES: string;
+    /**
      * other backend service base url
      *
      * the value is a json
@@ -62,22 +70,6 @@ declare namespace Env {
      * Only valid in the development environment
      */
     readonly VITE_HTTP_PROXY?: CommonType.YesOrNo;
-    /**
-     * the client id of the RuoYi backend, which is stored in the `sys_client` table
-     *
-     * it will be sent to the backend by the request header `clientid`
-     */
-    readonly VITE_APP_CLIENT_ID: string;
-    /**
-     * Whether to enable the api encrypt (RSA + AES) of the RuoYi backend
-     *
-     * If the backend enables api-encrypt, the annotated apis (like login) must be encrypted in the request body
-     */
-    readonly VITE_APP_ENCRYPT?: CommonType.YesOrNo;
-    /** The RSA public key to encrypt the aes key of the request body, matches the decrypt private key of the backend */
-    readonly VITE_APP_RSA_PUBLIC_KEY?: string;
-    /** The RSA private key to decrypt the response, matches the encrypt public key of the backend */
-    readonly VITE_APP_RSA_PRIVATE_KEY?: string;
     /**
      * Default menu icon if menu icon is not set
      *
@@ -98,10 +90,36 @@ declare namespace Env {
     readonly VITE_STORAGE_PREFIX?: string;
     /** Whether to automatically detect updates after configuring application packaging */
     readonly VITE_AUTOMATICALLY_DETECT_UPDATE?: CommonType.YesOrNo;
+    /** Whether to show watermark */
+    readonly VITE_WATERMARK?: CommonType.YesOrNo;
     /** show proxy url log in terminal */
     readonly VITE_PROXY_LOG?: CommonType.YesOrNo;
     /** The launch editor */
     readonly VITE_DEVTOOLS_LAUNCH_EDITOR?: import('vite-plugin-vue-devtools').VitePluginVueDevToolsOptions['launchEditor'];
+    /**
+     * the client id of the RuoYi backend, which is stored in the `sys_client` table
+     *
+     * it will be sent to the backend by the request header `clientid`
+     */
+    readonly VITE_APP_CLIENT_ID: string;
+    /** remember me */
+    readonly VITE_REMEMBER_ME_AES_KEY?: string;
+    /**
+     * Whether to enable the api encrypt (RSA + AES) of the RuoYi backend
+     *
+     * If the backend enables api-encrypt, the annotated apis (like login) must be encrypted in the request body
+     */
+    readonly VITE_APP_ENCRYPT?: CommonType.YesOrNo;
+    /** header flag */
+    readonly VITE_HEADER_FLAG?: string;
+    /** The RSA public key to encrypt the aes key of the request body, matches the decrypt private key of the backend */
+    readonly VITE_APP_RSA_PUBLIC_KEY?: string;
+    /** The RSA private key to decrypt the response, matches the encrypt public key of the backend */
+    readonly VITE_APP_RSA_PRIVATE_KEY?: string;
+    /** web socket */
+    readonly VITE_APP_WEBSOCKET: CommonType.YesOrNo;
+    /** sse */
+    readonly VITE_APP_SSE: CommonType.YesOrNo;
   }
 }
 

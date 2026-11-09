@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useFullscreen } from '@vueuse/core';
 import { GLOBAL_HEADER_MENU_ID } from '@/constants/app';
 import { useAppStore } from '@/store/modules/app';
+import { useAuthStore } from '@/store/modules/auth';
 import { useThemeStore } from '@/store/modules/theme';
 import GlobalBreadcrumb from '../global-breadcrumb/index.vue';
 import GlobalLogo from '../global-logo/index.vue';
 import GlobalSearch from '../global-search/index.vue';
+import MessageButton from './components/message-button.vue';
 import ThemeButton from './components/theme-button.vue';
 import UserAvatar from './components/user-avatar.vue';
 
@@ -25,8 +28,11 @@ interface Props {
 defineProps<Props>();
 
 const appStore = useAppStore();
+const authStore = useAuthStore();
 const themeStore = useThemeStore();
 const { isFullscreen, toggle } = useFullscreen();
+
+const tenantId = ref<CommonType.IdType>(authStore.userInfo.user?.tenantId || '000000');
 </script>
 
 <template>
@@ -38,7 +44,9 @@ const { isFullscreen, toggle } = useFullscreen();
       <GlobalBreadcrumb v-if="!appStore.isMobile" class="ml-12px" />
     </div>
     <div class="h-full flex-y-center justify-end">
+      <TenantSelect v-if="!appStore.isMobile" v-model:value="tenantId" class="mr-12px w-150px" />
       <GlobalSearch v-if="themeStore.header.globalSearch.visible" />
+      <MessageButton />
       <FullScreen v-if="!appStore.isMobile" :full="isFullscreen" @click="toggle" />
       <LangSwitch
         v-if="themeStore.header.multilingual.visible"

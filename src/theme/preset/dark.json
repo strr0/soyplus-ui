@@ -3,6 +3,7 @@
   "desc": "Dark theme preset for night time usage",
   "i18nkey": "theme.appearance.preset.dark",
   "version": "1.0.1",
+  "sort": 40,
   "themeScheme": "dark",
   "grayscale": false,
   "colourWeakness": false,
@@ -51,7 +52,7 @@
     "collapsedWidth": 64,
     "mixWidth": 90,
     "mixCollapsedWidth": 64,
-    "mixChildMenuWidth": 200
+    "mixChildMenuWidth": 230
   },
   "footer": {
     "visible": true,

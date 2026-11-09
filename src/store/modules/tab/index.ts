@@ -135,8 +135,9 @@ export const useTabStore = defineStore(SetupStoreId.Tab, () => {
    * Clear tabs
    *
    * @param excludes Exclude tab ids
+   * @param clearCache Whether to reset the keep-alive cache of the removed tabs
    */
-  async function clearTabs(excludes: string[] = []) {
+  async function clearTabs(excludes: string[] = [], clearCache: boolean = false) {
     const remainTabIds = [...getFixedTabIds(tabs.value), ...excludes];
 
     // Identify tabs to be removed and collect their routeKeys if strategy is 'close'
@@ -157,6 +158,15 @@ export const useTabStore = defineStore(SetupStoreId.Tab, () => {
     const isRemoveActiveTab = removedTabsIds.includes(activeTabId.value);
     // filterTabsByIds returns tabs NOT in removedTabsIds, so these are the tabs that will remain
     const updatedTabs = filterTabsByIds(removedTabsIds, tabs.value);
+
+    if (clearCache) {
+      removedTabsIds.forEach(tabId => {
+        const tab = tabs.value.find(t => t.id === tabId);
+        if (tab) {
+          routeStore.resetRouteCache(tab.routeKey);
+        }
+      });
+    }
 
     function update() {
       tabs.value = updatedTabs;
