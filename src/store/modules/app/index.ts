@@ -3,18 +3,16 @@ import { breakpointsTailwind, useBreakpoints, useEventListener, useTitle } from 
 import { defineStore } from 'pinia';
 import { useBoolean } from '@sa/hooks';
 import { localStg } from '@/utils/storage';
-import { $t, setLocale } from '@/locales';
+import { setLocale } from '@/locales';
 import { setDayjsLocale } from '@/locales/dayjs';
 import { router } from '@/router';
 import { SetupStoreId } from '@/enum';
 import { useRouteStore } from '../route';
-import { useTabStore } from '../tab';
 import { useThemeStore } from '../theme';
 
 export const useAppStore = defineStore(SetupStoreId.App, () => {
   const themeStore = useThemeStore();
   const routeStore = useRouteStore();
-  const tabStore = useTabStore();
   const scope = effectScope();
   const breakpoints = useBreakpoints(breakpointsTailwind);
   const { bool: themeDrawerVisible, setTrue: openThemeDrawer, setFalse: closeThemeDrawer } = useBoolean();
@@ -70,11 +68,9 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
 
   /** Update document title by locale */
   function updateDocumentTitleByLocale() {
-    const { i18nKey, title } = router.currentRoute.value.meta;
+    const { title } = router.currentRoute.value.meta;
 
-    const documentTitle = i18nKey ? $t(i18nKey) : title;
-
-    useTitle(documentTitle);
+    useTitle(title);
   }
 
   function init() {
@@ -117,12 +113,6 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     watch(locale, () => {
       // update document title by locale
       updateDocumentTitleByLocale();
-
-      // update global menus by locale
-      routeStore.updateGlobalMenusByLocale();
-
-      // update tabs by locale
-      tabStore.updateTabsByLocale();
 
       // set dayjs locale
       setDayjsLocale(locale.value);

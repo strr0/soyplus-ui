@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import type { RouteKey } from '@elegant-router/types';
 import { useBoolean } from '@sa/hooks';
 import { SimpleScrollbar } from '@sa/materials';
 import { GLOBAL_SIDER_MENU_ID } from '@/constants/app';
@@ -40,7 +39,7 @@ const hasChildMenus = computed(() => secondLevelMenus.value.length > 0);
 
 const showDrawer = computed(() => hasChildMenus.value && (drawerVisible.value || appStore.mixSiderFixed));
 
-function handleSelectMenu(key: RouteKey) {
+function handleSelectMenu(key: string) {
   handleSelectFirstLevelMenu(key);
 
   if (isActiveFirstLevelMenuHasChildren.value) {

@@ -3,9 +3,10 @@ import { useRoute } from 'vue-router';
 import { defineStore } from 'pinia';
 import { useLoading } from '@sa/hooks';
 import { localStg } from '@/utils/storage';
-import { fetchGetUserInfo, fetchLogin } from '@/service/api';
+import { fetchGetUserInfo, fetchLogin, fetchLogout } from '@/service/api';
 import { $t } from '@/locales';
 import { useRouterPush } from '@/hooks/common/router';
+import { router } from '@/router';
 import { SetupStoreId } from '@/enum';
 import { useRouteStore } from '../route';
 import { useTabStore } from '../tab';
@@ -16,24 +17,24 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const authStore = useAuthStore();
   const routeStore = useRouteStore();
   const tabStore = useTabStore();
-  const { toLogin, redirectFromLogin } = useRouterPush(false);
+  const { redirectFromLogin } = useRouterPush(false);
   const { loading: loginLoading, startLoading, endLoading } = useLoading();
 
   const token = ref('');
 
+  /** the original RuoYi user info: { user, roles, permissions } */
   const userInfo: Api.Auth.UserInfo = reactive({
-    userId: '',
-    userName: '',
+    user: {
+      userId: '',
+      userName: '',
+      nickName: ''
+    },
     roles: [],
-    buttons: []
+    permissions: []
   });
 
-  /** is super role in static route */
-  const isStaticSuper = computed(() => {
-    const { VITE_AUTH_ROUTE_MODE, VITE_STATIC_SUPER_ROLE } = import.meta.env;
-
-    return VITE_AUTH_ROUTE_MODE === 'static' && userInfo.roles.includes(VITE_STATIC_SUPER_ROLE);
-  });
+  /** is super admin by the permissions of RuoYi */
+  const isSuperAdmin = computed(() => userInfo.permissions.includes('*:*:*'));
 
   /** Is login */
   const isLogin = computed(() => Boolean(token.value));
@@ -47,7 +48,12 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     authStore.$reset();
 
     if (!route.meta.constant) {
-      await toLogin();
+      // jump to the login page by replace, same as plus-ui, so the back button can not go back to the protected page
+      await router.replace({
+        name: 'login',
+        params: { module: 'pwd-login' },
+        query: { redirect: route.fullPath }
+      });
     }
 
     tabStore.cacheTabs();
@@ -56,12 +62,12 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
   /** Record the user ID of the previous login session Used to compare with the current user ID on next login */
   function recordUserId() {
-    if (!userInfo.userId) {
+    if (!userInfo.user.userId) {
       return;
     }
 
     // Store current user ID locally for next login comparison
-    localStg.set('lastLoginUserId', userInfo.userId);
+    localStg.set('lastLoginUserId', String(userInfo.user.userId));
   }
 
   /**
@@ -70,14 +76,14 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
    * @returns {boolean} Whether to clear all tabs
    */
   function checkTabClear(): boolean {
-    if (!userInfo.userId) {
+    if (!userInfo.user.userId) {
       return false;
     }
 
     const lastLoginUserId = localStg.get('lastLoginUserId');
 
     // Clear all tabs if current user is different from previous user
-    if (!lastLoginUserId || lastLoginUserId !== userInfo.userId) {
+    if (!lastLoginUserId || lastLoginUserId !== String(userInfo.user.userId)) {
       localStg.remove('globalTabs');
       tabStore.clearTabs();
 
@@ -90,19 +96,19 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   }
 
   /**
-   * Login
+   * Login, same as the login flow of the plus-ui user store
    *
-   * @param userName User name
-   * @param password Password
+   * @param loginData Login params (username / password / captcha code and uuid)
    * @param [redirect=true] Whether to redirect after login. Default is `true`
    */
-  async function login(userName: string, password: string, redirect = true) {
+  async function login(loginData: Api.Auth.LoginData, redirect = true) {
     startLoading();
 
-    const { data: loginToken, error } = await fetchLogin(userName, password);
+    const { data: loginResult, error } = await fetchLogin(loginData);
 
-    if (!error) {
-      const pass = await loginByToken(loginToken);
+    // the backend returns a snake_case `access_token`, reject the login when it is missing
+    if (!error && loginResult?.access_token) {
+      const pass = await loginByToken(loginResult);
 
       if (pass) {
         // Check if the tab needs to be cleared
@@ -117,7 +123,8 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
         window.$notification?.success({
           title: $t('page.login.common.loginSuccess'),
-          content: $t('page.login.common.welcomeBack', { userName: userInfo.userName }),
+          // greet with the nickName, fallback to the login userName when it is empty
+          content: $t('page.login.common.welcomeBack', { userName: userInfo.user.nickName || userInfo.user.userName }),
           duration: 4500
         });
       }
@@ -128,16 +135,15 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     endLoading();
   }
 
-  async function loginByToken(loginToken: Api.Auth.LoginToken) {
+  async function loginByToken(loginResult: Api.Auth.LoginResult) {
     // 1. stored in the localStorage, the later requests need it in headers
-    localStg.set('token', loginToken.token);
-    localStg.set('refreshToken', loginToken.refreshToken);
+    localStg.set('token', loginResult.access_token);
 
     // 2. get user info
     const pass = await getUserInfo();
 
     if (pass) {
-      token.value = loginToken.token;
+      token.value = loginResult.access_token;
 
       return true;
     }
@@ -145,11 +151,17 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     return false;
   }
 
+  /** Get the user info from the RuoYi backend, same as the getInfo of the plus-ui user store */
   async function getUserInfo() {
     const { data: info, error } = await fetchGetUserInfo();
 
-    if (!error) {
-      // update store
+    if (!error && info?.user) {
+      // when the roles is empty, fallback to the ROLE_DEFAULT, keep same as plus-ui
+      if (!info.roles || info.roles.length === 0) {
+        info.roles = ['ROLE_DEFAULT'];
+      }
+
+      // store the original RuoYi user info directly, no field mapping
       Object.assign(userInfo, info);
 
       return true;
@@ -171,14 +183,33 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     }
   }
 
+  /**
+   * Logout by the RuoYi backend and reset the store, same as the logout flow of plus-ui
+   *
+   * the logout api invalidates the token session in the backend; the flat request never throws, so the local state is
+   * always cleared even when the session has already expired
+   */
+  async function logout() {
+    await fetchLogout();
+
+    // close all the opened pages like the `tab.closeAllPage()` of plus-ui
+    // set the active tab to the home tab first to avoid the route switching of the clearTabs
+    tabStore.activeTabId = tabStore.homeTab?.id || '';
+    await tabStore.clearTabs();
+    localStg.remove('globalTabs');
+
+    await resetStore();
+  }
+
   return {
     token,
     userInfo,
-    isStaticSuper,
+    isSuperAdmin,
     isLogin,
     loginLoading,
     resetStore,
     login,
+    logout,
     initUserInfo
   };
 });

@@ -9,17 +9,11 @@ declare module 'vue-router' {
      */
     title: string;
     /**
-     * I18n key of the route
-     *
-     * It's used in i18n, if it is set, the title will be ignored
-     */
-    i18nKey?: App.I18n.I18nKey | null;
-    /**
      * Roles of the route
      *
      * Route can be accessed if the current user has at least one of the roles
      *
-     * It only works when the route mode is "static", if the route mode is "dynamic", it will be ignored
+     * Not used in the RuoYi backend menu mode, the permission is verified by the backend
      */
     roles?: string[];
     /** Whether to cache the route */
@@ -48,17 +42,24 @@ declare module 'vue-router' {
     order?: number | null;
     /** The outer link of the route */
     href?: string | null;
+    /**
+     * The link of the backend menu of RuoYi
+     *
+     * - http url: an outer link, the same as `href`
+     * - others: an inner link, will be shown in a iframe page
+     */
+    link?: string | null;
     /** Whether to hide the route in the menu */
     hideInMenu?: boolean | null;
     /**
-     * The menu key will be activated when entering the route
+     * The menu key (route name) or route path will be activated when entering the route
      *
      * The route is not in the menu
      *
      * @example
      *   the route is "user_detail", if it is set to "user_list", the menu "user_list" will be activated
      */
-    activeMenu?: import('@elegant-router/types').RouteKey | null;
+    activeMenu?: string | null;
     /**
      * By default, the same route path will use one tab, even with different query, if set true, the route with
      * different query will use different tabs
@@ -68,12 +69,5 @@ declare module 'vue-router' {
     fixedIndexInTab?: number | null;
     /** if set query parameters, it will be automatically carried when entering the route */
     query?: { key: string; value: string }[] | null;
-    /**
-     * Whether the route is only available in the development environment
-     *
-     * When set to true, the route will only be loaded if `import.meta.env.DEV` is true, even if the route mode is
-     * "dynamic"
-     */
-    isDev?: boolean;
   }
 }

@@ -1,48 +1,39 @@
 import { request } from '../request';
 
 /**
- * Login
+ * Login, same as the login api of plus-ui
  *
- * @param userName User name
- * @param password Password
+ * @param data Login params (username / password / captcha code and uuid)
  */
-export function fetchLogin(userName: string, password: string) {
-  return request<Api.Auth.LoginToken>({
+export function fetchLogin(data: Api.Auth.LoginData) {
+  const params = {
+    ...data,
+    clientId: data.clientId || import.meta.env.VITE_APP_CLIENT_ID,
+    grantType: data.grantType || 'password'
+  };
+
+  return request<Api.Auth.LoginResult>({
     url: '/auth/login',
     method: 'post',
-    data: {
-      userName,
-      password
-    }
+    headers: {
+      // the login api of RuoYi is annotated with `@ApiEncrypt` when the server enables api-encrypt
+      isEncrypt: 'true'
+    },
+    data: params
   });
 }
 
-/** Get user info */
+/** Get captcha image */
+export function fetchCaptcha() {
+  return request<Api.Auth.Captcha>({ url: '/auth/code' });
+}
+
+/** Get user info, including roles and permissions */
 export function fetchGetUserInfo() {
-  return request<Api.Auth.UserInfo>({ url: '/auth/getUserInfo' });
+  return request<Api.Auth.UserInfo>({ url: '/system/user/getInfo' });
 }
 
-/**
- * Refresh token
- *
- * @param refreshToken Refresh token
- */
-export function fetchRefreshToken(refreshToken: string) {
-  return request<Api.Auth.LoginToken>({
-    url: '/auth/refreshToken',
-    method: 'post',
-    data: {
-      refreshToken
-    }
-  });
-}
-
-/**
- * return custom backend error
- *
- * @param code error code
- * @param msg error message
- */
-export function fetchCustomBackendError(code: string, msg: string) {
-  return request({ url: '/auth/error', params: { code, msg } });
+/** Logout */
+export function fetchLogout() {
+  return request({ url: '/auth/logout', method: 'post' });
 }

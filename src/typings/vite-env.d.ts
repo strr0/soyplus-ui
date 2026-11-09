@@ -51,16 +51,6 @@ declare namespace Env {
      */
     readonly VITE_SERVICE_MODAL_LOGOUT_CODES: string;
     /**
-     * token expired codes of backend service
-     *
-     * when the code is received, it will refresh the token and resend the request
-     *
-     * use "," to separate multiple codes
-     */
-    readonly VITE_SERVICE_EXPIRED_TOKEN_CODES: string;
-    /** when the route mode is static, the defined super role */
-    readonly VITE_STATIC_SUPER_ROLE: string;
-    /**
      * other backend service base url
      *
      * the value is a json
@@ -73,19 +63,21 @@ declare namespace Env {
      */
     readonly VITE_HTTP_PROXY?: CommonType.YesOrNo;
     /**
-     * The auth route mode
+     * the client id of the RuoYi backend, which is stored in the `sys_client` table
      *
-     * - Static: the auth routes is generated in front-end
-     * - Dynamic: the auth routes is generated in back-end
+     * it will be sent to the backend by the request header `clientid`
      */
-    readonly VITE_AUTH_ROUTE_MODE: 'static' | 'dynamic';
+    readonly VITE_APP_CLIENT_ID: string;
     /**
-     * The home route key
+     * Whether to enable the api encrypt (RSA + AES) of the RuoYi backend
      *
-     * It only has effect when the auth route mode is static, if the route mode is dynamic, the home route key is
-     * defined in the back-end
+     * If the backend enables api-encrypt, the annotated apis (like login) must be encrypted in the request body
      */
-    readonly VITE_ROUTE_HOME: import('@elegant-router/types').LastLevelRouteKey;
+    readonly VITE_APP_ENCRYPT?: CommonType.YesOrNo;
+    /** The RSA public key to encrypt the aes key of the request body, matches the decrypt private key of the backend */
+    readonly VITE_APP_RSA_PUBLIC_KEY?: string;
+    /** The RSA private key to decrypt the response, matches the encrypt public key of the backend */
+    readonly VITE_APP_RSA_PRIVATE_KEY?: string;
     /**
      * Default menu icon if menu icon is not set
      *

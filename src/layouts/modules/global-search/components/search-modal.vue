@@ -27,7 +27,7 @@ const visible = defineModel<boolean>('show', { required: true });
 function search() {
   resultOptions.value = routeStore.searchMenus.filter(menu => {
     const trimKeyword = keyword.value.toLocaleLowerCase().trim();
-    const title = (menu.i18nKey ? $t(menu.i18nKey) : menu.label).toLocaleLowerCase();
+    const title = menu.label.toLocaleLowerCase();
     return trimKeyword && title.includes(trimKeyword);
   });
   activePath.value = resultOptions.value[0]?.routePath ?? '';

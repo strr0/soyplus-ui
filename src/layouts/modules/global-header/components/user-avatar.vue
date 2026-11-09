@@ -14,6 +14,12 @@ const authStore = useAuthStore();
 const { routerPushByKey, toLogin } = useRouterPush();
 const { SvgIconVNode } = useSvgIcon();
 
+/** display the nickName first, fallback to the login userName when it is empty, same as plus-ui */
+const displayName = computed(() => authStore.userInfo.user.nickName || authStore.userInfo.user.userName);
+
+/** the avatar url of the user, empty when the user does not upload an avatar */
+const avatarUrl = computed(() => authStore.userInfo.user.avatarUrl || '');
+
 function loginOrRegister() {
   toLogin();
 }
@@ -50,7 +56,7 @@ function logout() {
     positiveText: $t('common.confirm'),
     negativeText: $t('common.cancel'),
     onPositiveClick: () => {
-      authStore.resetStore();
+      authStore.logout();
     }
   });
 }
@@ -72,8 +78,12 @@ function handleDropdown(key: DropdownKey) {
   <NDropdown v-else placement="bottom" trigger="click" :options="options" @select="handleDropdown">
     <div>
       <ButtonIcon>
-        <SvgIcon icon="ph:user-circle" class="text-icon-large" />
-        <span class="text-16px font-medium">{{ authStore.userInfo.userName }}</span>
+        <div class="flex-y-center gap-8px">
+          <NAvatar round :size="28" :src="avatarUrl" class="shrink-0">
+            <SvgIcon icon="ph:user-circle" class="text-20px" />
+          </NAvatar>
+          <span class="text-16px font-medium">{{ displayName }}</span>
+        </div>
       </ButtonIcon>
     </div>
   </NDropdown>

@@ -19,12 +19,7 @@ export default defineConfig(configEnv => {
     lint,
     fmt: {
       ...fmt,
-      ignorePatterns: [
-        'CHANGELOG.md',
-        'src/typings/components.d.ts',
-        'src/typings/elegant-router.d.ts',
-        'src/router/elegant'
-      ]
+      ignorePatterns: ['CHANGELOG.md', 'src/typings/components.d.ts']
     },
     resolve: {
       tsconfigPaths: true

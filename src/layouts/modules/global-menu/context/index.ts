@@ -1,6 +1,5 @@
 import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import type { RouteKey } from '@elegant-router/types';
 import { useContext } from '@sa/hooks';
 import { useRouteStore } from '@/store/modules/route';
 import { useThemeStore } from '@/store/modules/theme';
@@ -37,10 +36,20 @@ function useMixMenu() {
     activeFirstLevelMenuKey.value = key;
   }
 
-  function getActiveFirstLevelMenuKey() {
-    const [firstLevelRouteName] = selectedKey.value.split('_');
+  /** Whether the menu subtree contains the target menu key */
+  function menuContainsKey(menu: App.Global.Menu, targetKey: string): boolean {
+    if (menu.key === targetKey) return true;
 
-    setActiveFirstLevelMenuKey(firstLevelRouteName);
+    return Boolean(menu.children?.some(child => menuContainsKey(child, targetKey)));
+  }
+
+  function getActiveFirstLevelMenuKey() {
+    // the route names of the backend menu have no naming rule to split, so find the top level menu by the menu tree
+    const key = selectedKey.value;
+
+    const firstLevelMenu = allMenus.value.find(menu => menuContainsKey(menu, key));
+
+    setActiveFirstLevelMenuKey(firstLevelMenu?.key || key);
   }
 
   const isActiveFirstLevelMenuHasChildren = computed(() => {
@@ -53,7 +62,7 @@ function useMixMenu() {
     return Boolean(findItem?.children?.length);
   });
 
-  function handleSelectFirstLevelMenu(key: RouteKey) {
+  function handleSelectFirstLevelMenu(key: string) {
     setActiveFirstLevelMenuKey(key);
 
     if (!isActiveFirstLevelMenuHasChildren.value) {
@@ -72,18 +81,13 @@ function useMixMenu() {
   }
 
   function getActiveSecondLevelMenuKey() {
-    const keys = selectedKey.value.split('_');
+    const key = selectedKey.value;
 
-    if (keys.length < 2) {
-      setActiveSecondLevelMenuKey('');
-      return;
-    }
+    const firstLevelMenu = allMenus.value.find(menu => menu.key === activeFirstLevelMenuKey.value);
 
-    const [firstLevelRouteName, level2SuffixName] = keys;
+    const secondLevelMenu = firstLevelMenu?.children?.find(child => menuContainsKey(child, key));
 
-    const secondLevelRouteName = `${firstLevelRouteName}_${level2SuffixName}`;
-
-    setActiveSecondLevelMenuKey(secondLevelRouteName);
+    setActiveSecondLevelMenuKey(secondLevelMenu?.key || '');
   }
 
   const isActiveSecondLevelMenuHasChildren = computed(() => {
@@ -96,7 +100,7 @@ function useMixMenu() {
     return Boolean(findItem?.children?.length);
   });
 
-  function handleSelectSecondLevelMenu(key: RouteKey) {
+  function handleSelectSecondLevelMenu(key: string) {
     setActiveSecondLevelMenuKey(key);
 
     if (!isActiveSecondLevelMenuHasChildren.value) {
@@ -110,7 +114,7 @@ function useMixMenu() {
 
   const hasChildLevelMenus = computed(() => childLevelMenus.value.length > 0);
 
-  function getDeepestLevelMenuKey(): RouteKey | null {
+  function getDeepestLevelMenuKey(): string | null {
     if (!secondLevelMenus.value.length || !themeStore.sider.autoSelectFirstMenu) {
       return null;
     }
@@ -121,7 +125,7 @@ function useMixMenu() {
       return null;
     }
 
-    function findDeepest(menu: App.Global.Menu): RouteKey {
+    function findDeepest(menu: App.Global.Menu): string {
       if (!menu.children?.length) {
         return menu.routeKey;
       }

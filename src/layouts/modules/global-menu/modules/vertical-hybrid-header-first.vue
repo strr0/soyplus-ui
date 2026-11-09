@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import type { RouteKey } from '@elegant-router/types';
 import { useBoolean } from '@sa/hooks';
 import { SimpleScrollbar } from '@sa/materials';
 import { GLOBAL_HEADER_MENU_ID, GLOBAL_SIDER_MENU_ID } from '@/constants/app';
@@ -43,7 +42,7 @@ const inverted = computed(() => !themeStore.darkMode && themeStore.sider.inverte
 
 const showDrawer = computed(() => hasChildLevelMenus.value && (drawerVisible.value || appStore.mixSiderFixed));
 
-function handleSelectMixMenu(key: RouteKey) {
+function handleSelectMixMenu(key: string) {
   handleSelectSecondLevelMenu(key);
 
   if (isActiveSecondLevelMenuHasChildren.value) {
@@ -56,7 +55,7 @@ function handleSelectMixMenu(key: RouteKey) {
  * - When disabled: Activate first second-level menu for display only, expand third-level menu if exists
  * - When enabled: Navigate to the deepest menu automatically
  */
-function handleSelectMenu(key: RouteKey) {
+function handleSelectMenu(key: string) {
   handleSelectFirstLevelMenu(key);
 
   if (secondLevelMenus.value.length === 0) return;

@@ -1,28 +1,32 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue';
-import { loginModuleRecord } from '@/constants/app';
+import { computed, onMounted, reactive, ref } from 'vue';
+import { fetchCaptcha } from '@/service/api';
 import { $t } from '@/locales';
 import { useAuthStore } from '@/store/modules/auth';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
-import { useRouterPush } from '@/hooks/common/router';
 
 defineOptions({
   name: 'PwdLogin'
 });
 
 const authStore = useAuthStore();
-const { toggleLoginModule } = useRouterPush();
 const { formRef, validate } = useNaiveForm();
 
 interface FormModel {
   userName: string;
   password: string;
+  code: string;
 }
 
 const model: FormModel = reactive({
-  userName: 'Soybean',
-  password: '123456'
+  userName: '',
+  password: '',
+  code: ''
 });
+
+const captchaEnabled = ref(false);
+const captchaImg = ref('');
+const captchaUuid = ref('');
 
 const rules = computed<Record<keyof FormModel, App.Global.FormRule[]>>(() => {
   // inside computed to make locale reactive, if not apply i18n, you can define it without computed
@@ -30,47 +34,38 @@ const rules = computed<Record<keyof FormModel, App.Global.FormRule[]>>(() => {
 
   return {
     userName: formRules.userName,
-    password: formRules.pwd
+    password: formRules.pwd,
+    code: captchaEnabled.value ? formRules.code : []
   };
+});
+
+/** Get the captcha image from the RuoYi backend */
+async function getCaptcha() {
+  const { data, error } = await fetchCaptcha();
+
+  if (!error) {
+    captchaEnabled.value = data.captchaEnabled !== false;
+
+    if (captchaEnabled.value) {
+      // the `img` of RuoYi is a raw base64 string (without the `data:` prefix), so complete the data uri for the image src
+      const img = data.img;
+      captchaImg.value = img.startsWith('data:') ? img : `data:image/png;base64,${img}`;
+      captchaUuid.value = data.uuid;
+      model.code = '';
+    }
+  }
+}
+
+onMounted(() => {
+  getCaptcha();
 });
 
 async function handleSubmit() {
   await validate();
-  await authStore.login(model.userName, model.password);
-}
 
-type AccountKey = 'super' | 'admin' | 'user';
+  const { userName, password, code } = model;
 
-interface Account {
-  key: AccountKey;
-  label: string;
-  userName: string;
-  password: string;
-}
-
-const accounts = computed<Account[]>(() => [
-  {
-    key: 'super',
-    label: $t('page.login.pwdLogin.superAdmin'),
-    userName: 'Super',
-    password: '123456'
-  },
-  {
-    key: 'admin',
-    label: $t('page.login.pwdLogin.admin'),
-    userName: 'Admin',
-    password: '123456'
-  },
-  {
-    key: 'user',
-    label: $t('page.login.pwdLogin.user'),
-    userName: 'User',
-    password: '123456'
-  }
-]);
-
-async function handleAccountLogin(account: Account) {
-  await authStore.login(account.userName, account.password);
+  await authStore.login({ username: userName, password, code, uuid: captchaUuid.value });
 }
 </script>
 
@@ -87,30 +82,23 @@ async function handleAccountLogin(account: Account) {
         :placeholder="$t('page.login.common.passwordPlaceholder')"
       />
     </NFormItem>
-    <NSpace vertical :size="24">
-      <div class="flex-y-center justify-between">
-        <NCheckbox>{{ $t('page.login.pwdLogin.rememberMe') }}</NCheckbox>
-        <NButton quaternary @click="toggleLoginModule('reset-pwd')">
-          {{ $t('page.login.pwdLogin.forgetPassword') }}
-        </NButton>
+    <NFormItem v-if="captchaEnabled" path="code">
+      <div class="flex-y-center gap-12px w-full">
+        <NInput
+          v-model:value="model.code"
+          class="flex-1"
+          :placeholder="$t('page.login.codeLogin.imageCodePlaceholder')"
+          @keyup.enter="handleSubmit"
+        />
+        <div class="h-40px w-100px cursor-pointer overflow-hidden" @click="getCaptcha">
+          <NImage v-if="captchaImg" :src="captchaImg" class="h-full w-full" :preview-disabled="true" alt="captcha" />
+        </div>
       </div>
+    </NFormItem>
+    <NSpace vertical :size="24">
       <NButton type="primary" size="large" round block :loading="authStore.loginLoading" @click="handleSubmit">
         {{ $t('common.confirm') }}
       </NButton>
-      <div class="flex-y-center justify-between gap-12px">
-        <NButton class="flex-1" block @click="toggleLoginModule('code-login')">
-          {{ $t(loginModuleRecord['code-login']) }}
-        </NButton>
-        <NButton class="flex-1" block @click="toggleLoginModule('register')">
-          {{ $t(loginModuleRecord.register) }}
-        </NButton>
-      </div>
-      <NDivider class="text-14px text-#666 !m-0">{{ $t('page.login.pwdLogin.otherAccountLogin') }}</NDivider>
-      <div class="flex-center gap-12px">
-        <NButton v-for="item in accounts" :key="item.key" type="primary" @click="handleAccountLogin(item)">
-          {{ item.label }}
-        </NButton>
-      </div>
     </NSpace>
   </NForm>
 </template>

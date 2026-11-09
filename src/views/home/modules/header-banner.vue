@@ -13,6 +13,9 @@ const authStore = useAuthStore();
 
 const gap = computed(() => (appStore.isMobile ? 0 : 16));
 
+/** greet with the nickName, fallback to the login userName when it is empty */
+const userName = computed(() => authStore.userInfo.user.nickName || authStore.userInfo.user.userName);
+
 interface StatisticData {
   id: number;
   label: string;
@@ -48,7 +51,7 @@ const statisticData = computed<StatisticData[]>(() => [
           </div>
           <div class="pl-12px">
             <h3 class="text-18px font-semibold">
-              {{ $t('page.home.greeting', { userName: authStore.userInfo.userName }) }}
+              {{ $t('page.home.greeting', { userName }) }}
             </h3>
             <p class="text-#999 leading-30px">{{ $t('page.home.weatherDesc') }}</p>
           </div>

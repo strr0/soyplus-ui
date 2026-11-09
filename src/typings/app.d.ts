@@ -187,10 +187,11 @@ declare namespace App {
   namespace Global {
     type VNode = import('vue').VNode;
     type RouteLocationNormalizedLoaded = import('vue-router').RouteLocationNormalizedLoaded;
-    type RouteKey = import('@elegant-router/types').RouteKey;
-    type RouteMap = import('@elegant-router/types').RouteMap;
-    type RoutePath = import('@elegant-router/types').RoutePath;
-    type LastLevelRouteKey = import('@elegant-router/types').LastLevelRouteKey;
+    /** the route key of the backend menu, degraded to string since the elegant-router is removed */
+    type RouteKey = string;
+    type RouteMap = Record<string, string>;
+    type RoutePath = string;
+    type LastLevelRouteKey = string;
 
     /** The router push options */
     type RouterPushOptions = {
@@ -219,8 +220,6 @@ declare namespace App {
       key: string;
       /** The menu label */
       label: string;
-      /** The menu i18n key */
-      i18nKey?: I18n.I18nKey | null;
       /** The route key */
       routeKey: RouteKey;
       /** The route path */
@@ -277,8 +276,6 @@ declare namespace App {
        * Local icon
        */
       localIcon?: string;
-      /** I18n key */
-      i18nKey?: I18n.I18nKey | null;
     };
 
     /** Form rule */
@@ -294,7 +291,7 @@ declare namespace App {
    * Locales type
    */
   namespace I18n {
-    type RouteKey = import('@elegant-router/types').RouteKey;
+    type RouteKey = string;
 
     type LangType = 'en-US' | 'zh-CN';
 
@@ -303,7 +300,7 @@ declare namespace App {
       key: LangType;
     };
 
-    type I18nRouteKey = Exclude<RouteKey, 'root' | 'not-found'>;
+    type I18nRouteKey = string;
 
     type FormMsg = {
       required: string;
@@ -640,7 +637,7 @@ declare namespace App {
     /** The backend service response data */
     type Response<T = unknown> = {
       /** The backend service response code */
-      code: string;
+      code: string | number;
       /** The backend service response message */
       msg: string;
       /** The backend service response data */

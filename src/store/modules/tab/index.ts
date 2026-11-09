@@ -1,7 +1,6 @@
 import { computed, ref } from 'vue';
 import { useEventListener } from '@vueuse/core';
 import { defineStore } from 'pinia';
-import type { RouteKey } from '@elegant-router/types';
 import { localStg } from '@/utils/storage';
 import { useRouteStore } from '@/store/modules/route';
 import { useRouterPush } from '@/hooks/common/router';
@@ -18,9 +17,7 @@ import {
   getTabByRoute,
   getTabIdByRoute,
   isTabInTabs,
-  reorderFixedTabs,
-  updateTabByI18nKey,
-  updateTabsByI18nKey
+  reorderFixedTabs
 } from './shared';
 
 export const useTabStore = defineStore(SetupStoreId.Tab, () => {
@@ -64,7 +61,7 @@ export const useTabStore = defineStore(SetupStoreId.Tab, () => {
 
     if (themeStore.tab.cache && storageTabs) {
       const extractedTabs = extractTabsByAllRoutes(router, storageTabs);
-      tabs.value = updateTabsByI18nKey(extractedTabs);
+      tabs.value = extractedTabs;
     }
 
     addTab(currentRoute);
@@ -127,7 +124,7 @@ export const useTabStore = defineStore(SetupStoreId.Tab, () => {
    *
    * @param routeName route name
    */
-  async function removeTabByRouteName(routeName: RouteKey) {
+  async function removeTabByRouteName(routeName: string) {
     const tab = findTabByRouteName(routeName, tabs.value);
     if (!tab) return;
 
@@ -144,7 +141,7 @@ export const useTabStore = defineStore(SetupStoreId.Tab, () => {
 
     // Identify tabs to be removed and collect their routeKeys if strategy is 'close'
     const tabsToRemove = tabs.value.filter(tab => !remainTabIds.includes(tab.id));
-    const routeKeysToReset: RouteKey[] = [];
+    const routeKeysToReset: string[] = [];
 
     for (const tab of tabsToRemove) {
       routeKeysToReset.push(tab.routeKey);
@@ -191,7 +188,7 @@ export const useTabStore = defineStore(SetupStoreId.Tab, () => {
    * @param key Route key
    * @param options Router push options
    */
-  async function replaceTab(key: RouteKey, options?: App.Global.RouterPushOptions) {
+  async function replaceTab(key: string, options?: App.Global.RouterPushOptions) {
     const oldTabId = activeTabId.value;
 
     // push new route
@@ -336,15 +333,6 @@ export const useTabStore = defineStore(SetupStoreId.Tab, () => {
     return fixedTabIds.includes(tabId);
   }
 
-  /** Update tabs by locale */
-  function updateTabsByLocale() {
-    tabs.value = updateTabsByI18nKey(tabs.value);
-
-    if (homeTab.value) {
-      homeTab.value = updateTabByI18nKey(homeTab.value);
-    }
-  }
-
   /** Cache tabs */
   function cacheTabs() {
     if (!themeStore.tab.cache) return;
@@ -378,7 +366,6 @@ export const useTabStore = defineStore(SetupStoreId.Tab, () => {
     setTabLabel,
     resetTabLabel,
     isTabRetain,
-    updateTabsByLocale,
     getTabIdByRoute,
     cacheTabs
   };

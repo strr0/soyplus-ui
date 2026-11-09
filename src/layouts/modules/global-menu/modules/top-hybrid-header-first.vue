@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import type { RouteKey } from '@elegant-router/types';
 import { SimpleScrollbar } from '@sa/materials';
 import { GLOBAL_HEADER_MENU_ID, GLOBAL_SIDER_MENU_ID } from '@/constants/app';
 import { useAppStore } from '@/store/modules/app';
@@ -32,9 +31,9 @@ const expandedKeys = ref<string[]>([]);
 
 /**
  * Handle first level menu select
- * @param key RouteKey
+ * @param key the route key of the menu
  */
-function handleSelectMenu(key: RouteKey) {
+function handleSelectMenu(key: string) {
   handleSelectFirstLevelMenu(key);
 
   // if there are second level menus, select the deepest one by default

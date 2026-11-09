@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { createReusableTemplate } from '@vueuse/core';
-import type { RouteKey } from '@elegant-router/types';
 import { transformColorWithOpacity } from '@sa/color';
 import { SimpleScrollbar } from '@sa/materials';
 
@@ -21,7 +20,7 @@ interface Props {
 const props = defineProps<Props>();
 
 interface Emits {
-  (e: 'select', menuKey: RouteKey): boolean;
+  (e: 'select', menuKey: App.Global.RouteKey): boolean;
   (e: 'toggleSiderCollapse'): void;
 }
 
@@ -48,7 +47,7 @@ const selectedBgColor = computed(() => {
   return darkMode ? dark : light;
 });
 
-function handleClickMixMenu(menuKey: RouteKey) {
+function handleClickMixMenu(menuKey: App.Global.RouteKey) {
   emit('select', menuKey);
 }
 
